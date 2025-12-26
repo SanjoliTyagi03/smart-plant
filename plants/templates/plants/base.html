@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="{% block meta_description %}Discover and learn about amazing plants with comprehensive care guides, search filters, and expert tips for plant enthusiasts.{% endblock %}">
+    <meta name="keywords" content="plants, plant care, houseplants, gardening, indoor plants, plant guide">
+    <meta name="author" content="PlantCare">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{% block og_url %}{{ request.build_absolute_uri }}{% endblock %}">
+    <meta property="og:title" content="{% block og_title %}PlantCare - Your Plant Care Companion{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Discover and learn about amazing plants with comprehensive care guides and expert tips.{% endblock %}">
+    <meta property="og:image" content="{% block og_image %}{% load static %}{{ request.scheme }}://{{ request.get_host }}{% static 'images/og-image.jpg' %}{% endblock %}">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="{% block twitter_url %}{{ request.build_absolute_uri }}{% endblock %}">
+    <meta property="twitter:title" content="{% block twitter_title %}PlantCare - Your Plant Care Companion{% endblock %}">
+    <meta property="twitter:description" content="{% block twitter_description %}Discover and learn about amazing plants with comprehensive care guides and expert tips.{% endblock %}">
+    <meta property="twitter:image" content="{% block twitter_image %}{% load static %}{{ request.scheme }}://{{ request.get_host }}{% static 'images/twitter-image.jpg' %}{% endblock %}">
+
+    <title>{% block title %}PlantCare - Your Plant Care Companion{% endblock %}</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
+    
+    {% load static %}
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="{% static 'css/style.css' %}" as="style">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" as="style">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    
+    <!-- Theme color -->
+    <meta name="theme-color" content="#2d5a27">
+    <meta name="msapplication-TileColor" content="#2d5a27">
+    
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <!-- Skip to main content for accessibility -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    
+    <nav class="navbar" role="navigation" aria-label="Main navigation">
+        <div class="nav-container">
+            <a href="{% url 'home' %}" class="nav-logo" aria-label="PlantCare Home">
+                <i class="fas fa-leaf" aria-hidden="true"></i>
+                PlantCare
+            </a>
+            <ul class="nav-menu" role="menubar">
+                <li class="nav-item" role="none">
+                    <a href="{% url 'home' %}" class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}" role="menuitem" aria-current="{% if request.resolver_match.url_name == 'home' %}page{% endif %}">Home</a>
+                </li>
+                <li class="nav-item" role="none">
+                    <a href="{% url 'plant_list' %}" class="nav-link {% if request.resolver_match.url_name == 'plant_list' %}active{% endif %}" role="menuitem" aria-current="{% if request.resolver_match.url_name == 'plant_list' %}page{% endif %}">Plants</a>
+                </li>
+            </ul>
+            <button class="hamburger" aria-label="Toggle navigation menu" aria-expanded="false">
+                <span class="bar" aria-hidden="true"></span>
+                <span class="bar" aria-hidden="true"></span>
+                <span class="bar" aria-hidden="true"></span>
+            </button>
+        </div>
+    </nav>
+
+    <main id="main-content" role="main">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer class="footer" role="contentinfo">
+        <div class="footer-container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3><i class="fas fa-leaf" aria-hidden="true"></i> PlantCare</h3>
+                    <p>Your trusted companion for plant care and gardening tips. Discover, learn, and grow with confidence.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="{% url 'home' %}">Home</a></li>
+                        <li><a href="{% url 'plant_list' %}">All Plants</a></li>
+                        <li><a href="{% url 'plant_list' %}?difficulty=easy">Easy Care Plants</a></li>
+                        <li><a href="{% url 'plant_list' %}?pet_safe=true">Pet Safe Plants</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Plant Care</h4>
+                    <ul>
+                        <li><a href="{% url 'plant_list' %}?air_purifying=true">Air Purifying Plants</a></li>
+                        <li><a href="{% url 'plant_list' %}?light=low">Low Light Plants</a></li>
+                        <li><a href="{% url 'plant_list' %}?difficulty=easy&pet_safe=true">Beginner Friendly</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <p><i class="fas fa-envelope" aria-hidden="true"></i> info@plantcare.com</p>
+                    <p><i class="fas fa-phone" aria-hidden="true"></i> (555) 123-4567</p>
+                    <div class="social-links" style="margin-top: 1rem;">
+                        <a href="#" aria-label="Follow us on Facebook" style="margin-right: 1rem; color: rgba(255,255,255,0.7); font-size: 1.2rem;"><i class="fab fa-facebook"></i></a>
+                        <a href="#" aria-label="Follow us on Instagram" style="margin-right: 1rem; color: rgba(255,255,255,0.7); font-size: 1.2rem;"><i class="fab fa-instagram"></i></a>
+                        <a href="#" aria-label="Follow us on Twitter" style="color: rgba(255,255,255,0.7); font-size: 1.2rem;"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 PlantCare. All rights reserved. Made with <i class="fas fa-heart" style="color: #ff6b6b;" aria-hidden="true"></i> for plant lovers.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="{% static 'js/main.js' %}" defer></script>
+    
+    <!-- Service Worker for PWA (optional) -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js').then(function(registration) {
+                    console.log('SW registered: ', registration);
+                }).catch(function(registrationError) {
+                    console.log('SW registration failed: ', registrationError);
+                });
+            });
+        }
+    </script>
+    
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

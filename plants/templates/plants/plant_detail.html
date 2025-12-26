@@ -1,0 +1,197 @@
+{% extends 'plants/base.html' %}
+{% load static %}
+
+{% block title %}{{ plant.name }} - PlantCare{% endblock %}
+
+{% block content %}
+<section class="plant-detail">
+    <div class="container">
+        <!-- Back Button -->
+        <div class="back-nav">
+            <a href="{% url 'plant_list' %}" class="back-btn">
+                <i class="fas fa-arrow-left"></i>
+                Back to Plants
+            </a>
+        </div>
+
+        <!-- Plant Header -->
+        <div class="plant-header">
+            <div class="plant-image-large">
+                {% if plant.get_image_url %}
+                    <img src="{{ plant.get_image_url }}" alt="{{ plant.name }}">
+                {% else %}
+                    <div class="plant-placeholder-large">
+                        <i class="fas fa-leaf"></i>
+                    </div>
+                {% endif %}
+                <div class="plant-badges-large">
+                    {% if plant.pet_safe %}
+                        <span class="badge badge-pet-safe">Pet Safe</span>
+                    {% endif %}
+                    {% if plant.air_purifying %}
+                        <span class="badge badge-air-purifying">Air Purifying</span>
+                    {% endif %}
+                    {% if plant.featured %}
+                        <span class="badge badge-featured">Featured</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="plant-header-info">
+                <h1 class="plant-title">{{ plant.name }}</h1>
+                {% if plant.scientific_name %}
+                    <p class="plant-scientific-large">{{ plant.scientific_name }}</p>
+                {% endif %}
+                <p class="plant-description-large">{{ plant.description }}</p>
+                
+                <div class="plant-quick-info">
+                    <div class="quick-info-item">
+                        <span class="difficulty difficulty-{{ plant.difficulty }}">
+                            <i class="fas fa-signal"></i>
+                            {{ plant.get_difficulty_display }}
+                        </span>
+                    </div>
+                    <div class="quick-info-item">
+                        <span class="light-req">
+                            <i class="fas fa-sun"></i>
+                            {{ plant.get_light_requirements_display }}
+                        </span>
+                    </div>
+                    <div class="quick-info-item">
+                        <span class="water-freq">
+                            <i class="fas fa-tint"></i>
+                            {{ plant.get_water_frequency_display }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Care Information -->
+        <div class="care-sections">
+            <!-- Basic Care -->
+            <div class="care-section">
+                <h2 class="care-title">
+                    <i class="fas fa-seedling"></i>
+                    Basic Care Requirements
+                </h2>
+                <div class="care-grid">
+                    <div class="care-item">
+                        <div class="care-icon">
+                            <i class="fas fa-sun"></i>
+                        </div>
+                        <div class="care-content">
+                            <h4>Light Requirements</h4>
+                            <p>{{ plant.get_light_requirements_display }}</p>
+                        </div>
+                    </div>
+                    <div class="care-item">
+                        <div class="care-icon">
+                            <i class="fas fa-tint"></i>
+                        </div>
+                        <div class="care-content">
+                            <h4>Watering</h4>
+                            <p>{{ plant.get_water_frequency_display }}</p>
+                        </div>
+                    </div>
+                    <div class="care-item">
+                        <div class="care-icon">
+                            <i class="fas fa-mountain"></i>
+                        </div>
+                        <div class="care-content">
+                            <h4>Soil Type</h4>
+                            <p>{{ plant.soil_type }}</p>
+                        </div>
+                    </div>
+                    <div class="care-item">
+                        <div class="care-icon">
+                            <i class="fas fa-thermometer-half"></i>
+                        </div>
+                        <div class="care-content">
+                            <h4>Temperature</h4>
+                            <p>{{ plant.temperature_range }}</p>
+                        </div>
+                    </div>
+                    <div class="care-item">
+                        <div class="care-icon">
+                            <i class="fas fa-cloud"></i>
+                        </div>
+                        <div class="care-content">
+                            <h4>Humidity</h4>
+                            <p>{{ plant.humidity }}</p>
+                        </div>
+                    </div>
+                    <div class="care-item">
+                        <div class="care-icon">
+                            <i class="fas fa-leaf"></i>
+                        </div>
+                        <div class="care-content">
+                            <h4>Fertilizer</h4>
+                            <p>{{ plant.fertilizer_needs }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detailed Care Instructions -->
+            <div class="care-section">
+                <h2 class="care-title">
+                    <i class="fas fa-book"></i>
+                    Detailed Care Instructions
+                </h2>
+                <div class="care-text">
+                    <p>{{ plant.care_instructions|linebreaks }}</p>
+                </div>
+            </div>
+
+            <!-- Plant Characteristics -->
+            <div class="care-section">
+                <h2 class="care-title">
+                    <i class="fas fa-info-circle"></i>
+                    Plant Characteristics
+                </h2>
+                <div class="characteristics-grid">
+                    {% if plant.mature_size %}
+                    <div class="char-item">
+                        <strong>Mature Size:</strong>
+                        <span>{{ plant.mature_size }}</span>
+                    </div>
+                    {% endif %}
+                    <div class="char-item">
+                        <strong>Growth Rate:</strong>
+                        <span>{{ plant.growth_rate }}</span>
+                    </div>
+                    <div class="char-item">
+                        <strong>Repotting:</strong>
+                        <span>{{ plant.repotting_frequency }}</span>
+                    </div>
+                    <div class="char-item">
+                        <strong>Pet Safe:</strong>
+                        <span class="{% if plant.pet_safe %}text-success{% else %}text-warning{% endif %}">
+                            {% if plant.pet_safe %}Yes{% else %}No{% endif %}
+                        </span>
+                    </div>
+                    <div class="char-item">
+                        <strong>Air Purifying:</strong>
+                        <span class="{% if plant.air_purifying %}text-success{% else %}text-muted{% endif %}">
+                            {% if plant.air_purifying %}Yes{% else %}No{% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Common Problems -->
+            {% if plant.common_problems %}
+            <div class="care-section">
+                <h2 class="care-title">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Common Problems & Solutions
+                </h2>
+                <div class="care-text">
+                    <p>{{ plant.common_problems|linebreaks }}</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

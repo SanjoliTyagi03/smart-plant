@@ -1,0 +1,139 @@
+{% extends 'plants/base.html' %}
+{% load static %}
+
+{% block title %}Plants Collection - PlantCare{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1>Plant Collection</h1>
+        <p>Discover and learn about amazing plants for your home and garden</p>
+    </div>
+</section>
+
+<section class="plants-section">
+    <div class="container">
+        <!-- Search and Filters -->
+        <div class="filters-container">
+            <form method="get" class="filters-form">
+                <div class="search-box">
+                    <input type="text" name="search" placeholder="Search plants..." value="{{ search_query }}" class="search-input">
+                    <button type="submit" class="search-btn">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+                
+                <div class="filters-grid">
+                    <div class="filter-group">
+                        <label for="difficulty">Difficulty:</label>
+                        <select name="difficulty" id="difficulty" class="filter-select">
+                            <option value="">All Levels</option>
+                            {% for value, label in difficulty_choices %}
+                                <option value="{{ value }}" {% if selected_difficulty == value %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="light">Light Requirements:</label>
+                        <select name="light" id="light" class="filter-select">
+                            <option value="">All Light Levels</option>
+                            {% for value, label in light_choices %}
+                                <option value="{{ value }}" {% if selected_light == value %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <div class="checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="pet_safe" value="true" {% if selected_pet_safe == 'true' %}checked{% endif %}>
+                                <span class="checkmark"></span>
+                                Pet Safe Only
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <div class="checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="air_purifying" value="true" {% if selected_air_purifying == 'true' %}checked{% endif %}>
+                                <span class="checkmark"></span>
+                                Air Purifying Only
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="filter-actions">
+                    <button type="submit" class="btn btn-primary">Apply Filters</button>
+                    <a href="{% url 'plant_list' %}" class="btn btn-secondary">Clear All</a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Results Count -->
+        <div class="results-info">
+            <p>Found {{ plants.count }} plant{{ plants.count|pluralize }}</p>
+        </div>
+
+        <!-- Plants Grid -->
+        {% if plants %}
+        <div class="plants-grid">
+            {% for plant in plants %}
+            <div class="plant-card">
+                <div class="plant-image">
+                    {% if plant.get_image_url %}
+                        <img src="{{ plant.get_image_url }}" alt="{{ plant.name }}">
+                    {% else %}
+                        <div class="plant-placeholder">
+                            <i class="fas fa-leaf"></i>
+                        </div>
+                    {% endif %}
+                    <div class="plant-badges">
+                        {% if plant.pet_safe %}
+                            <span class="badge badge-pet-safe">Pet Safe</span>
+                        {% endif %}
+                        {% if plant.air_purifying %}
+                            <span class="badge badge-air-purifying">Air Purifying</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="plant-info">
+                    <h3 class="plant-name">{{ plant.name }}</h3>
+                    {% if plant.scientific_name %}
+                        <p class="plant-scientific">{{ plant.scientific_name }}</p>
+                    {% endif %}
+                    <p class="plant-description">{{ plant.description|truncatewords:15 }}</p>
+                    <div class="plant-meta">
+                        <span class="difficulty difficulty-{{ plant.difficulty }}">
+                            <i class="fas fa-signal"></i>
+                            {{ plant.get_difficulty_display }}
+                        </span>
+                        <span class="light-req">
+                            <i class="fas fa-sun"></i>
+                            {{ plant.get_light_requirements_display }}
+                        </span>
+                        <span class="water-freq">
+                            <i class="fas fa-tint"></i>
+                            {{ plant.get_water_frequency_display }}
+                        </span>
+                    </div>
+                    <a href="{% url 'plant_detail' plant.pk %}" class="btn btn-outline">View Details</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="no-results">
+            <div class="no-results-icon">
+                <i class="fas fa-search"></i>
+            </div>
+            <h3>No plants found</h3>
+            <p>Try adjusting your search criteria or browse all plants.</p>
+            <a href="{% url 'plant_list' %}" class="btn btn-primary">View All Plants</a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
