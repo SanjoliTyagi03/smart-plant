@@ -1,0 +1,453 @@
+{% extends 'plants/base.html' %}
+{% load static %}
+
+{% block title %}Plant Analyzer — PlantCare{% endblock %}
+
+{% block extra_head %}
+<style>
+  /* ── Analyze page overrides ── */
+  .analyze-hero {
+    background: linear-gradient(160deg, #0d1f15 0%, #122918 40%, #1a3d2b 100%);
+    padding: 72px 0 64px;
+    position: relative;
+    overflow: hidden;
+  }
+  .analyze-hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+      radial-gradient(circle at 20% 50%, rgba(61,153,112,0.12) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(61,153,112,0.08) 0%, transparent 40%);
+    pointer-events: none;
+  }
+  .analyze-hero-inner {
+    position: relative; z-index: 1;
+    display: flex; flex-direction: column; align-items: center; text-align: center;
+  }
+  .analyze-eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(61,153,112,0.15); border: 1px solid rgba(61,153,112,0.3);
+    color: #6fcf97; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.14em;
+    text-transform: uppercase; padding: 6px 16px; border-radius: 99px;
+    margin-bottom: 20px;
+  }
+  .analyze-hero h1 {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 700; color: #f0f7f2; line-height: 1.15;
+    margin-bottom: 14px;
+  }
+  .analyze-hero h1 em { font-style: italic; color: #6fcf97; }
+  .analyze-hero p {
+    color: rgba(240,247,242,0.6); font-size: 1rem; max-width: 420px; line-height: 1.7;
+  }
+
+  /* ── Upload zone ── */
+  .analyze-body { padding: 56px 0 80px; }
+  .analyze-layout { max-width: 960px; margin: 0 auto; }
+
+  .upload-zone {
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 4px 40px rgba(26,61,43,0.10), 0 1px 6px rgba(26,61,43,0.06);
+    overflow: hidden;
+    margin-bottom: 48px;
+  }
+  .upload-zone-inner {
+    padding: 48px;
+    display: flex; flex-direction: column; align-items: center; gap: 28px;
+  }
+
+  .drop-area {
+    width: 100%; max-width: 420px;
+    border: 2px dashed #c5d8cc;
+    border-radius: 16px;
+    padding: 40px 28px;
+    display: flex; flex-direction: column; align-items: center; gap: 14px;
+    cursor: pointer; transition: all 0.22s ease;
+    position: relative; overflow: hidden;
+    background: #f9faf7;
+  }
+  .drop-area:hover { border-color: #3d9970; background: #f0f9f4; }
+  .drop-area.has-file { border-style: solid; border-color: #3d9970; background: #f0f9f4; padding: 0; }
+
+  .drop-icon {
+    width: 64px; height: 64px; border-radius: 50%;
+    background: linear-gradient(135deg, #d4edda, #a8d5b5);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.6rem; color: #1a3d2b;
+    transition: all 0.22s ease;
+  }
+  .drop-area:hover .drop-icon { transform: scale(1.08); }
+  .drop-area.has-file .drop-icon { display: none; }
+
+  .drop-title { font-weight: 600; color: #1a3d2b; font-size: 0.95rem; }
+  .drop-sub { font-size: 0.82rem; color: #6b7c6e; text-align: center; line-height: 1.5; }
+  .drop-area.has-file .drop-title,
+  .drop-area.has-file .drop-sub { display: none; }
+
+  #image-preview {
+    display: none; width: 100%; aspect-ratio: 4/3; object-fit: cover;
+    border-radius: 14px;
+  }
+  .drop-area.has-file #image-preview { display: block; }
+
+  #image-input { display: none; }
+
+  .file-chosen-label {
+    display: none; align-items: center; gap: 8px;
+    font-size: 0.85rem; color: #3d9970; font-weight: 600;
+    background: #d4edda; padding: 6px 14px; border-radius: 99px;
+  }
+  .drop-area.has-file + .file-chosen-label { display: inline-flex; }
+
+  .upload-actions { display: flex; flex-direction: column; align-items: center; gap: 12px; width: 100%; max-width: 420px; }
+
+  .btn-analyze {
+    width: 100%; padding: 15px; border-radius: 12px;
+    background: linear-gradient(135deg, #1a3d2b, #2d5a40);
+    color: #fff; font-size: 1rem; font-weight: 700;
+    border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
+    transition: all 0.22s ease; box-shadow: 0 4px 16px rgba(26,61,43,0.25);
+    position: relative; overflow: hidden;
+  }
+  .btn-analyze::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.08), transparent);
+  }
+  .btn-analyze:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(26,61,43,0.32); }
+  .btn-analyze:active { transform: translateY(0); }
+  .btn-analyze.loading { pointer-events: none; opacity: 0.8; }
+  .btn-analyze.loading .btn-text { display: none; }
+  .btn-analyze .btn-loading { display: none; align-items: center; gap: 10px; }
+  .btn-analyze.loading .btn-loading { display: flex; }
+
+  .spinner {
+    width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: #fff; border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .upload-hint { font-size: 0.8rem; color: #9eaea0; text-align: center; }
+
+  /* ── Error alert ── */
+  .alert-error {
+    background: #fef2f2; border: 1px solid #fecaca; color: #991b1b;
+    border-radius: 12px; padding: 16px 20px; margin-bottom: 32px;
+    display: flex; align-items: center; gap: 12px; font-size: 0.92rem;
+  }
+  .alert-error i { flex-shrink: 0; font-size: 1rem; }
+
+  /* ── Results ── */
+  .results-section { animation: fadeUp 0.5s ease both; }
+  @keyframes fadeUp { from { opacity:0; transform: translateY(20px); } to { opacity:1; transform: translateY(0); } }
+
+  .result-identity {
+    background: linear-gradient(135deg, #0d1f15 0%, #1a3d2b 100%);
+    border-radius: 20px; padding: 40px 48px;
+    margin-bottom: 24px; position: relative; overflow: hidden;
+  }
+  .result-identity::after {
+    content: ''; position: absolute;
+    right: -40px; top: -40px;
+    width: 200px; height: 200px;
+    border-radius: 50%; background: rgba(61,153,112,0.12);
+    pointer-events: none;
+  }
+  .result-identity-inner { position: relative; z-index: 1; }
+  .result-label {
+    font-size: 0.72rem; font-weight: 700; letter-spacing: 0.14em;
+    text-transform: uppercase; color: #6fcf97; margin-bottom: 8px;
+  }
+  .result-plant-name {
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 700; color: #f0f7f2; line-height: 1.2; margin-bottom: 6px;
+  }
+  .result-scientific { color: rgba(240,247,242,0.55); font-size: 0.95rem; font-style: italic; margin-bottom: 20px; }
+
+  .health-pill {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 8px 20px; border-radius: 99px;
+    font-size: 0.88rem; font-weight: 700; letter-spacing: 0.04em;
+  }
+  .health-pill .dot {
+    width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+  }
+  .health-pill.healthy  { background: rgba(16,185,129,0.15); color: #6fcf97; }
+  .health-pill.healthy .dot  { background: #34d399; box-shadow: 0 0 6px #34d399; }
+  .health-pill.stressed { background: rgba(245,158,11,0.15); color: #fbbf24; }
+  .health-pill.stressed .dot { background: #fbbf24; box-shadow: 0 0 6px #fbbf24; }
+  .health-pill.diseased { background: rgba(239,68,68,0.15); color: #f87171; }
+  .health-pill.diseased .dot { background: #f87171; box-shadow: 0 0 6px #f87171; }
+  .health-pill.unknown  { background: rgba(148,163,184,0.15); color: #94a3b8; }
+  .health-pill.unknown .dot  { background: #94a3b8; }
+
+  /* ── Result grid ── */
+  .result-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 32px;
+  }
+  .result-card {
+    background: #fff;
+    border: 1px solid #e2e8e0;
+    border-radius: 16px;
+    padding: 28px 32px;
+    box-shadow: 0 2px 8px rgba(26,61,43,0.06);
+  }
+  .result-card--full { grid-column: 1 / -1; }
+  .result-card--cure {
+    grid-column: 1 / -1;
+    border-color: #fca5a5;
+    background: linear-gradient(135deg, #fff7f7, #fff);
+  }
+
+  .rc-header {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 18px; padding-bottom: 14px;
+    border-bottom: 1px solid #f0f4f1;
+  }
+  .rc-icon {
+    width: 36px; height: 36px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.9rem; flex-shrink: 0;
+  }
+  .rc-icon--green  { background: #d4edda; color: #1a3d2b; }
+  .rc-icon--blue   { background: #dbeafe; color: #1e40af; }
+  .rc-icon--red    { background: #fee2e2; color: #991b1b; }
+  .rc-icon--amber  { background: #fef3c7; color: #92400e; }
+
+  .rc-header h3 { font-size: 0.88rem; font-weight: 700; color: #1a3d2b; letter-spacing: 0.02em; text-transform: uppercase; }
+
+  .result-card p { color: #3d4f42; line-height: 1.75; font-size: 0.94rem; }
+
+  .care-rows { display: flex; flex-direction: column; gap: 12px; }
+  .care-row {
+    display: flex; align-items: flex-start; gap: 14px;
+    padding: 10px 14px; border-radius: 10px; background: #f9faf7;
+  }
+  .care-row-icon {
+    width: 32px; height: 32px; border-radius: 8px;
+    background: #d4edda; color: #1a3d2b;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.8rem; flex-shrink: 0;
+  }
+  .care-row-text { flex: 1; }
+  .care-row-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #6b7c6e; margin-bottom: 2px; }
+  .care-row-value { font-size: 0.93rem; color: #1c2b1e; line-height: 1.5; }
+
+  .analyze-again-bar {
+    display: flex; justify-content: center; padding-top: 8px; margin-bottom: 16px;
+  }
+  .btn-again {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 11px 28px; border-radius: 99px;
+    border: 2px solid #c5d8cc; color: #1a3d2b;
+    font-size: 0.9rem; font-weight: 600;
+    transition: all 0.2s ease; background: #fff;
+  }
+  .btn-again:hover { border-color: #3d9970; background: #f0f9f4; color: #3d9970; }
+
+  /* ── Responsive ── */
+  @media (max-width: 640px) {
+    .upload-zone-inner { padding: 32px 24px; }
+    .result-identity { padding: 28px 28px; }
+    .result-grid { grid-template-columns: 1fr; }
+    .result-card--cure { grid-column: auto; }
+    .result-card { padding: 22px 20px; }
+    .analyze-hero { padding: 52px 0 48px; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Hero -->
+<section class="analyze-hero">
+  <div class="container analyze-hero-inner">
+    <span class="analyze-eyebrow"><i class="fas fa-dna"></i> AI-Powered Diagnosis</span>
+    <h1>Analyze your <em>plant's health</em></h1>
+    <p>Upload or photograph your plant and get an instant diagnosis, personalised care plan, and cure recommendations.</p>
+  </div>
+</section>
+
+<!-- Body -->
+<section class="analyze-body">
+  <div class="container">
+    <div class="analyze-layout">
+
+      {% if error %}
+        <div class="alert-error">
+          <i class="fas fa-exclamation-triangle"></i> {{ error }}
+        </div>
+      {% endif %}
+
+      <!-- Upload form -->
+      <div class="upload-zone">
+        <div class="upload-zone-inner">
+          <form method="post" enctype="multipart/form-data" id="analyze-form" style="display:contents;">
+            {% csrf_token %}
+
+            <label for="image-input" class="drop-area" id="drop-area">
+              <div class="drop-icon"><i class="fas fa-camera-retro"></i></div>
+              <img id="image-preview" src="" alt="Preview">
+              <p class="drop-title">Drop your plant photo here</p>
+              <p class="drop-sub">or click to open camera / file browser<br><span style="opacity:.6">JPG, PNG, WEBP · up to 20 MB</span></p>
+            </label>
+            <span class="file-chosen-label" id="file-chosen-label">
+              <i class="fas fa-check"></i> <span id="file-chosen-name">Image ready</span>
+            </span>
+
+            <input type="file" id="image-input" name="image" accept="image/*" capture="environment">
+
+            <div class="upload-actions">
+              <button type="submit" class="btn-analyze" id="analyze-btn">
+                <span class="btn-text"><i class="fas fa-microscope"></i> Analyze Plant</span>
+                <span class="btn-loading"><span class="spinner"></span> Analyzing…</span>
+              </button>
+              <p class="upload-hint">Results appear on this page — nothing is stored.</p>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Results -->
+      {% if result %}
+      <div class="results-section">
+
+        <div class="result-identity">
+          <div class="result-identity-inner">
+            <p class="result-label">Analysis complete</p>
+            <h2 class="result-plant-name">{{ result.plant_name }}</h2>
+            {% if result.scientific_name %}
+              <p class="result-scientific">{{ result.scientific_name }}</p>
+            {% endif %}
+            {% with status=result.health_status|lower %}
+            <span class="health-pill {{ status }}">
+              <span class="dot"></span>
+              {{ result.health_status }}
+            </span>
+            {% endwith %}
+          </div>
+        </div>
+
+        <div class="result-grid">
+
+          <!-- Current condition -->
+          <div class="result-card">
+            <div class="rc-header">
+              <span class="rc-icon rc-icon--green"><i class="fas fa-eye"></i></span>
+              <h3>Current Condition</h3>
+            </div>
+            <p>{{ result.current_condition }}</p>
+          </div>
+
+          <!-- Common problems -->
+          <div class="result-card">
+            <div class="rc-header">
+              <span class="rc-icon rc-icon--amber"><i class="fas fa-bug"></i></span>
+              <h3>Common Problems</h3>
+            </div>
+            <p>{{ result.common_problems }}</p>
+          </div>
+
+          <!-- Care plan -->
+          <div class="result-card result-card--full">
+            <div class="rc-header">
+              <span class="rc-icon rc-icon--green"><i class="fas fa-leaf"></i></span>
+              <h3>Care Plan</h3>
+            </div>
+            <div class="care-rows">
+              <div class="care-row">
+                <div class="care-row-icon"><i class="fas fa-sun"></i></div>
+                <div class="care-row-text">
+                  <div class="care-row-label">Light</div>
+                  <div class="care-row-value">{{ result.care_plan.light }}</div>
+                </div>
+              </div>
+              <div class="care-row">
+                <div class="care-row-icon"><i class="fas fa-tint"></i></div>
+                <div class="care-row-text">
+                  <div class="care-row-label">Water</div>
+                  <div class="care-row-value">{{ result.care_plan.water }}</div>
+                </div>
+              </div>
+              <div class="care-row">
+                <div class="care-row-icon"><i class="fas fa-seedling"></i></div>
+                <div class="care-row-text">
+                  <div class="care-row-label">Soil</div>
+                  <div class="care-row-value">{{ result.care_plan.soil }}</div>
+                </div>
+              </div>
+              <div class="care-row">
+                <div class="care-row-icon"><i class="fas fa-thermometer-half"></i></div>
+                <div class="care-row-text">
+                  <div class="care-row-label">Temperature</div>
+                  <div class="care-row-value">{{ result.care_plan.temperature }}</div>
+                </div>
+              </div>
+              <div class="care-row">
+                <div class="care-row-icon"><i class="fas fa-cloud"></i></div>
+                <div class="care-row-text">
+                  <div class="care-row-label">Humidity</div>
+                  <div class="care-row-value">{{ result.care_plan.humidity }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Cure plan (only if needed) -->
+          {% if result.cure_plan %}
+          <div class="result-card result-card--cure">
+            <div class="rc-header">
+              <span class="rc-icon rc-icon--red"><i class="fas fa-first-aid"></i></span>
+              <h3>Cure Plan</h3>
+            </div>
+            <p>{{ result.cure_plan }}</p>
+          </div>
+          {% endif %}
+
+        </div>
+
+        <div class="analyze-again-bar">
+          <a href="{% url 'analyze' %}" class="btn-again">
+            <i class="fas fa-redo"></i> Analyze another plant
+          </a>
+        </div>
+
+      </div>
+      {% endif %}
+
+    </div>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  const input   = document.getElementById('image-input');
+  const area    = document.getElementById('drop-area');
+  const preview = document.getElementById('image-preview');
+  const label   = document.getElementById('file-chosen-label');
+  const nameEl  = document.getElementById('file-chosen-name');
+  const form    = document.getElementById('analyze-form');
+  const btn     = document.getElementById('analyze-btn');
+
+  input.addEventListener('change', () => {
+    const file = input.files[0];
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+    preview.src = url;
+    area.classList.add('has-file');
+    nameEl.textContent = file.name.length > 28 ? file.name.slice(0, 26) + '…' : file.name;
+  });
+
+  form.addEventListener('submit', () => {
+    if (input.files.length) btn.classList.add('loading');
+  });
+</script>
+{% endblock %}

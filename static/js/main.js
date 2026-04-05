@@ -1,46 +1,38 @@
 // Modern JavaScript for PlantCare Application
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize all features
     initNavigation();
     initScrollAnimations();
     initImageHandling();
     initFilterEnhancements();
     initSmoothScrolling();
-    initLoadingStates();
-    initParallaxEffects(); // Re-enabled for hero background parallax
     initCardAnimations();
+    initTabs();
+    initFilterCheckboxPills();
 });
 
-// Navigation Enhancement - Fixed scroll behavior
+// Navigation Enhancement
 function initNavigation() {
     const hamburger = document.querySelector('.hamburger');
-    const navMenu = document.querySelector('.nav-menu');
+    const navOverlay = document.getElementById('navOverlay');
     const navbar = document.querySelector('.navbar');
-    
-    // Mobile menu toggle
-    if (hamburger && navMenu) {
+
+    // Mobile overlay menu toggle
+    if (hamburger && navOverlay) {
         hamburger.addEventListener('click', function() {
-            hamburger.classList.toggle('active');
-            navMenu.classList.toggle('active');
-            document.body.style.overflow = navMenu.classList.contains('active') ? 'hidden' : '';
+            const isOpen = navOverlay.classList.toggle('open');
+            hamburger.classList.toggle('active', isOpen);
+            navOverlay.setAttribute('aria-hidden', String(!isOpen));
+            document.body.style.overflow = isOpen ? 'hidden' : '';
+            hamburger.setAttribute('aria-expanded', String(isOpen));
         });
 
-        // Close menu when clicking on links
-        document.querySelectorAll('.nav-link').forEach(link => {
+        // Close when overlay links clicked
+        navOverlay.querySelectorAll('.nav-link').forEach(link => {
             link.addEventListener('click', () => {
+                navOverlay.classList.remove('open');
                 hamburger.classList.remove('active');
-                navMenu.classList.remove('active');
                 document.body.style.overflow = '';
             });
-        });
-
-        // Close menu when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!hamburger.contains(e.target) && !navMenu.contains(e.target)) {
-                hamburger.classList.remove('active');
-                navMenu.classList.remove('active');
-                document.body.style.overflow = '';
-            }
         });
     }
 
@@ -59,10 +51,13 @@ function initNavigation() {
             }
             
             // Only hide navbar when scrolling down past hero section
+            const filterBar = document.querySelector('.filter-bar');
             if (currentScrollY > lastScrollY && currentScrollY > 400) {
                 navbar.classList.add('hidden');
+                if (filterBar) filterBar.style.top = '0px';
             } else {
                 navbar.classList.remove('hidden');
+                if (filterBar) filterBar.style.top = 'var(--nav-h)';
             }
             
             lastScrollY = currentScrollY;
@@ -276,57 +271,43 @@ function initSmoothScrolling() {
     });
 }
 
-// Loading States
-function initLoadingStates() {
-    // Button loading states
-    document.querySelectorAll('.btn').forEach(btn => {
-        if (btn.type === 'submit' || btn.classList.contains('search-btn')) {
-            btn.addEventListener('click', function() {
-                if (!this.classList.contains('loading')) {
-                    this.classList.add('loading');
-                    const originalText = this.innerHTML;
-                    
-                    if (this.classList.contains('search-btn')) {
-                        this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-                    } else {
-                        this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
-                    }
-                    
-                    // Reset after timeout (for demo purposes)
-                    setTimeout(() => {
-                        this.classList.remove('loading');
-                        this.innerHTML = originalText;
-                    }, 2000);
-                }
+
+// Tab switching for plant detail page
+function initTabs() {
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    if (!tabBtns.length) return;
+
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const targetTab = this.dataset.tab;
+
+            // Update buttons
+            tabBtns.forEach(b => {
+                b.classList.remove('active');
+                b.setAttribute('aria-selected', 'false');
             });
-        }
+            this.classList.add('active');
+            this.setAttribute('aria-selected', 'true');
+
+            // Update panels
+            document.querySelectorAll('.tab-panel').forEach(panel => {
+                panel.classList.remove('active');
+            });
+            const target = document.getElementById('tab-' + targetTab);
+            if (target) target.classList.add('active');
+        });
     });
 }
 
-// Parallax Effects - Re-enabled for hero background only
-function initParallaxEffects() {
-    const hero = document.querySelector('.hero');
-    
-    if (hero && window.innerWidth > 768) { // Only on desktop
-        let ticking = false;
-        
-        function updateParallax() {
-            const scrolled = window.pageYOffset;
-            const rate = scrolled * 0.5; // Positive value for downward movement
-            
-            // Apply parallax to background image
-            hero.style.backgroundPosition = `center ${rate}px`;
-            
-            ticking = false;
-        }
-        
-        window.addEventListener('scroll', () => {
-            if (!ticking) {
-                requestAnimationFrame(updateParallax);
-                ticking = true;
-            }
+// Filter checkbox pills — visual sync on page load
+function initFilterCheckboxPills() {
+    document.querySelectorAll('.filter-checkbox-pill input[type="checkbox"]').forEach(cb => {
+        const pill = cb.closest('.filter-checkbox-pill');
+        // Sync checked state (already done via Django template class, this covers edge cases)
+        cb.addEventListener('change', function() {
+            pill.classList.toggle('checked', this.checked);
         });
-    }
+    });
 }
 
 // Card Animations
@@ -629,11 +610,7 @@ function initParticleEffect() {
 
 // Initialize new features
 document.addEventListener('DOMContentLoaded', function() {
-    // Add to existing initialization
-    initStatsCounter();
     initAdvancedImageLoading();
-    initParticleEffect();
-    // Removed initScrollProgress() - causing the line issue
 });
 
 // Add CSS for enhanced animations

@@ -34,11 +34,12 @@
     
     <!-- Preload critical resources -->
     <link rel="preload" href="{% static 'css/style.css' %}" as="style">
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" as="style">
-    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
     <!-- Stylesheets -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,400;1,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer">
     
     <!-- Theme color -->
@@ -58,11 +59,14 @@
                 PlantCare
             </a>
             <ul class="nav-menu" role="menubar">
-                <li class="nav-item" role="none">
-                    <a href="{% url 'home' %}" class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}" role="menuitem" aria-current="{% if request.resolver_match.url_name == 'home' %}page{% endif %}">Home</a>
+                <li role="none">
+                    <a href="{% url 'home' %}" class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}" role="menuitem">Home</a>
                 </li>
-                <li class="nav-item" role="none">
-                    <a href="{% url 'plant_list' %}" class="nav-link {% if request.resolver_match.url_name == 'plant_list' %}active{% endif %}" role="menuitem" aria-current="{% if request.resolver_match.url_name == 'plant_list' %}page{% endif %}">Plants</a>
+                <li role="none">
+                    <a href="{% url 'plant_list' %}" class="nav-link {% if request.resolver_match.url_name == 'plant_list' or request.resolver_match.url_name == 'plant_detail' %}active{% endif %}" role="menuitem">Plants</a>
+                </li>
+                <li role="none">
+                    <a href="{% url 'analyze' %}" class="nav-link {% if request.resolver_match.url_name == 'analyze' %}active{% endif %}" role="menuitem">Analyze</a>
                 </li>
             </ul>
             <button class="hamburger" aria-label="Toggle navigation menu" aria-expanded="false">
@@ -73,6 +77,13 @@
         </div>
     </nav>
 
+    <!-- Mobile overlay nav -->
+    <div class="nav-overlay" id="navOverlay" aria-hidden="true">
+        <a href="{% url 'home' %}" class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">Home</a>
+        <a href="{% url 'plant_list' %}" class="nav-link {% if request.resolver_match.url_name == 'plant_list' or request.resolver_match.url_name == 'plant_detail' %}active{% endif %}">Plants</a>
+        <a href="{% url 'analyze' %}" class="nav-link {% if request.resolver_match.url_name == 'analyze' %}active{% endif %}">Analyze</a>
+    </div>
+
     <main id="main-content" role="main">
         {% block content %}
         {% endblock %}
@@ -82,39 +93,40 @@
         <div class="footer-container">
             <div class="footer-content">
                 <div class="footer-section">
-                    <h3><i class="fas fa-leaf" aria-hidden="true"></i> PlantCare</h3>
+                    <h3><i class="fas fa-leaf"></i> PlantCare</h3>
                     <p>Your trusted companion for plant care and gardening tips. Discover, learn, and grow with confidence.</p>
+                    <div class="social-links">
+                        <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" aria-label="Twitter/X"><i class="fab fa-x-twitter"></i></a>
+                    </div>
                 </div>
                 <div class="footer-section">
-                    <h4>Quick Links</h4>
+                    <h4>Explore</h4>
                     <ul>
                         <li><a href="{% url 'home' %}">Home</a></li>
                         <li><a href="{% url 'plant_list' %}">All Plants</a></li>
-                        <li><a href="{% url 'plant_list' %}?difficulty=easy">Easy Care Plants</a></li>
-                        <li><a href="{% url 'plant_list' %}?pet_safe=true">Pet Safe Plants</a></li>
+                        <li><a href="{% url 'plant_list' %}?difficulty=easy">Easy Care</a></li>
+                        <li><a href="{% url 'plant_list' %}?pet_safe=true">Pet Safe</a></li>
                     </ul>
                 </div>
                 <div class="footer-section">
-                    <h4>Plant Care</h4>
+                    <h4>Care Guides</h4>
                     <ul>
-                        <li><a href="{% url 'plant_list' %}?air_purifying=true">Air Purifying Plants</a></li>
-                        <li><a href="{% url 'plant_list' %}?light=low">Low Light Plants</a></li>
+                        <li><a href="{% url 'plant_list' %}?air_purifying=true">Air Purifying</a></li>
+                        <li><a href="{% url 'plant_list' %}?light=low">Low Light</a></li>
                         <li><a href="{% url 'plant_list' %}?difficulty=easy&pet_safe=true">Beginner Friendly</a></li>
                     </ul>
                 </div>
-                <div class="footer-section">
+                <div class="footer-section footer-contact">
                     <h4>Contact</h4>
-                    <p><i class="fas fa-envelope" aria-hidden="true"></i> info@plantcare.com</p>
-                    <p><i class="fas fa-phone" aria-hidden="true"></i> (555) 123-4567</p>
-                    <div class="social-links" style="margin-top: 1rem;">
-                        <a href="#" aria-label="Follow us on Facebook" style="margin-right: 1rem; color: rgba(255,255,255,0.7); font-size: 1.2rem;"><i class="fab fa-facebook"></i></a>
-                        <a href="#" aria-label="Follow us on Instagram" style="margin-right: 1rem; color: rgba(255,255,255,0.7); font-size: 1.2rem;"><i class="fab fa-instagram"></i></a>
-                        <a href="#" aria-label="Follow us on Twitter" style="color: rgba(255,255,255,0.7); font-size: 1.2rem;"><i class="fab fa-twitter"></i></a>
-                    </div>
+                    <p><i class="fas fa-envelope"></i> info@plantcare.com</p>
+                    <p><i class="fas fa-phone"></i> (555) 123-4567</p>
+                    <p><i class="fas fa-map-marker-alt"></i> San Francisco, CA</p>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2024 PlantCare. All rights reserved. Made with <i class="fas fa-heart" style="color: #ff6b6b;" aria-hidden="true"></i> for plant lovers.</p>
+                <p>&copy; 2025 PlantCare. Made with <i class="fas fa-heart"></i> for plant lovers.</p>
             </div>
         </div>
     </footer>

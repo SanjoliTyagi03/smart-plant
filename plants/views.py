@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from django.db.models import Q
 from .models import Plant
+from .gemini import analyze_plant_image
 
 
 def home(request):
@@ -68,3 +69,23 @@ def plant_detail(request, pk):
         'plant': plant,
     }
     return render(request, 'plants/plant_detail.html', context)
+
+
+def analyze(request):
+    """Plant analyzer page — upload image, get Gemini health/care report"""
+    result = None
+    error = None
+
+    if request.method == 'POST':
+        image_file = request.FILES.get('image')
+        if not image_file:
+            error = 'Please upload an image'
+        else:
+            mime_type = image_file.content_type or 'image/jpeg'
+            image_bytes = image_file.read()
+            result = analyze_plant_image(image_bytes, mime_type)
+            if 'error' in result:
+                error = result['error']
+                result = None
+
+    return render(request, 'plants/analyze.html', {'result': result, 'error': error})
