@@ -6,86 +6,131 @@
 
 {% block content %}
 
-<!-- Hero -->
-<section class="hero">
-    <div class="hero-orb hero-orb-1"></div>
-    <div class="hero-orb hero-orb-2"></div>
-    <div class="hero-orb hero-orb-3"></div>
+<!-- Hero (split layout) -->
+<section class="hero hero--split" style="background-image: url('{% static 'images/hero-bg.jpg' %}'); background-size: cover; background-position: center; background-repeat: no-repeat;">
+    <div class="hero-bg-overlay"></div>
     <div class="hero-container container">
-        <span class="hero-eyebrow"><i class="fas fa-seedling"></i> Plant care, simplified</span>
-        <h1 class="hero-title">Discover the <em>Perfect Plants</em><br>for Your Home</h1>
-        <p class="hero-subtitle">Expert care guides, beautiful varieties, and everything you need to build your green sanctuary — for beginners and seasoned plant parents alike.</p>
-        <div class="hero-buttons">
-            <a href="{% url 'plant_list' %}" class="btn btn-primary btn-large">
-                <i class="fas fa-leaf"></i> Explore Plants
-            </a>
-            <a href="#featured" class="btn btn-ghost btn-large">
-                See Featured <i class="fas fa-arrow-down"></i>
-            </a>
+        <div class="hero-content">
+            <span class="hero-eyebrow"><i class="fas fa-seedling"></i> Plant care, simplified</span>
+            <h1 class="hero-title">Bring The <em>Nature</em><br>Close To You</h1>
+            <p class="hero-subtitle">Enhance your space with our indoor and rare plants. Experience the calming effect of greenery, right at home.</p>
+            <div class="hero-buttons">
+                <a href="{% url 'plant_list' %}" class="btn btn-primary btn-large">
+                    <i class="fas fa-leaf"></i> Explore Plants
+                </a>
+                <a href="{% url 'analyze' %}" class="btn btn-ghost btn-large">
+                    <i class="fas fa-camera"></i> Analyze Plant
+                </a>
+            </div>
+            <div class="hero-stats">
+                <div>
+                    <div class="hero-stat-value">40+</div>
+                    <div class="hero-stat-label">Plant varieties</div>
+                </div>
+                <div>
+                    <div class="hero-stat-value">13</div>
+                    <div class="hero-stat-label">Pet-safe options</div>
+                </div>
+                <div>
+                    <div class="hero-stat-value">21</div>
+                    <div class="hero-stat-label">Air purifying</div>
+                </div>
+            </div>
         </div>
-        <div class="hero-stats">
-            <div>
-                <div class="hero-stat-value">40+</div>
-                <div class="hero-stat-label">Plant varieties</div>
+
+        <div class="hero-visual">
+            <div class="hero-arch">
+                <img src="{% static 'images/hero-img.jpg' %}" alt="Beautiful plant" class="hero-arch-img">
+                <div class="hero-arch-badge">
+                    <span class="hero-arch-badge-value">40+</span>
+                    <span class="hero-arch-badge-label">Plants</span>
+                </div>
+                <i class="fas fa-leaf hero-arch-leaf hero-arch-leaf--1"></i>
+                <i class="fas fa-leaf hero-arch-leaf hero-arch-leaf--2"></i>
+                <i class="fas fa-spa hero-arch-leaf hero-arch-leaf--3"></i>
             </div>
-            <div>
-                <div class="hero-stat-value">13</div>
-                <div class="hero-stat-label">Pet-safe options</div>
+            <div class="hero-orb hero-orb-1"></div>
+            <div class="hero-orb hero-orb-2"></div>
+            <div class="hero-orb hero-orb-3"></div>
+        </div>
+    </div>
+</section>
+
+<!-- Services Strip -->
+<section class="services-strip">
+    <div class="container">
+        <div class="services-grid">
+            <div class="service-item">
+                <div class="service-icon"><i class="fas fa-book-open"></i></div>
+                <div class="service-text">
+                    <strong>Expert Care Guides</strong>
+                    <span>Comprehensive guides for 40+ plants</span>
+                </div>
             </div>
-            <div>
-                <div class="hero-stat-value">21</div>
-                <div class="hero-stat-label">Air purifying</div>
+            <div class="service-divider"></div>
+            <div class="service-item">
+                <div class="service-icon"><i class="fas fa-paw"></i></div>
+                <div class="service-text">
+                    <strong>Pet-Safe Varieties</strong>
+                    <span>13 plants safe for your furry friends</span>
+                </div>
             </div>
-            <div>
-                <div class="hero-stat-value">20</div>
-                <div class="hero-stat-label">Easy care picks</div>
+            <div class="service-divider"></div>
+            <div class="service-item">
+                <div class="service-icon"><i class="fas fa-wind"></i></div>
+                <div class="service-text">
+                    <strong>Air Purifying</strong>
+                    <span>21 plants to freshen your space</span>
+                </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Features / Stats Band -->
-<section class="features-band">
+<!-- Category Cards -->
+<section class="categories-section">
     <div class="container">
-        <span class="section-label text-center" style="display:block;">Why PlantCare</span>
-        <h2 class="section-title text-center">Everything you need to grow</h2>
-        <p class="section-subtitle text-center">From finding the right plant to keeping it thriving — we've got you covered at every step.</p>
-        <div class="stats-grid animate-on-scroll">
-            <div class="stat-card">
-                <div class="stat-card-icon"><i class="fas fa-book-open"></i></div>
-                <div class="stat-card-value">40+</div>
-                <div class="stat-card-label">Expert care guides</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-card-icon"><i class="fas fa-paw"></i></div>
-                <div class="stat-card-value">13</div>
-                <div class="stat-card-label">Pet-safe varieties</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-card-icon"><i class="fas fa-wind"></i></div>
-                <div class="stat-card-value">21</div>
-                <div class="stat-card-label">Air-purifying plants</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-card-icon"><i class="fas fa-seedling"></i></div>
-                <div class="stat-card-value">20</div>
-                <div class="stat-card-label">Beginner-friendly picks</div>
-            </div>
+        <div class="categories-grid">
+            <a href="{% url 'plant_list' %}?difficulty=easy" class="category-card category-card--olive"
+               style="background-image: url('{% static 'images/indoor.jpeg' %}');">
+                <div class="category-card-overlay"></div>
+                <div class="category-card-content">
+                    <div class="category-card-label">Easy Care</div>
+                    <h3 class="category-card-title">Indoor<br>Plants</h3>
+                    <span class="category-card-link">Explore Plants <i class="fas fa-arrow-right"></i></span>
+                </div>
+            </a>
+            <a href="{% url 'plant_list' %}?air_purifying=true" class="category-card category-card--rose"
+               style="background-image: url('{% static 'images/herbal.jpeg' %}');">
+                <div class="category-card-overlay"></div>
+                <div class="category-card-content">
+                    <div class="category-card-label">Air Purifying</div>
+                    <h3 class="category-card-title">Herbal<br>Plants</h3>
+                    <span class="category-card-link">Explore Plants <i class="fas fa-arrow-right"></i></span>
+                </div>
+            </a>
         </div>
     </div>
 </section>
 
 <!-- Featured Plants -->
 {% if featured_plants %}
-<section id="featured" class="featured-plants">
+<section id="featured" class="featured-section">
     <div class="container">
         <span class="section-label" style="display:block; text-align:center;">Handpicked for you</span>
-        <h2 class="section-title text-center">Featured Plants</h2>
-        <p class="section-subtitle text-center">Resilient, beautiful, and loved by thousands of plant parents. A great place to start your journey.</p>
+        <h2 class="section-title text-center">Our Plants</h2>
 
-        <div class="plants-grid">
+        <div class="plant-tabs">
+            <button class="plant-tab active" data-filter="all">What's New</button>
+            <button class="plant-tab" data-filter="easy">Easy Care</button>
+            <button class="plant-tab" data-filter="pet">Pet Friendly</button>
+        </div>
+
+        <div class="plants-grid" id="featuredGrid">
             {% for plant in featured_plants %}
-            <article class="plant-card animate-on-scroll">
+            <article class="plant-card animate-on-scroll"
+                     data-difficulty="{{ plant.difficulty }}"
+                     data-pet="{{ plant.pet_safe|yesno:'true,false' }}">
                 <div class="plant-image">
                     {% if plant.get_image_url %}
                         <img src="{{ plant.get_image_url }}" alt="{{ plant.name }}" loading="lazy">
@@ -108,7 +153,6 @@
                     <div class="plant-meta">
                         <span class="difficulty difficulty-{{ plant.difficulty }}"><i class="fas fa-signal"></i> {{ plant.get_difficulty_display }}</span>
                         <span><i class="fas fa-sun"></i> {{ plant.get_light_requirements_display }}</span>
-                        <span><i class="fas fa-tint"></i> {{ plant.get_water_frequency_display }}</span>
                     </div>
                     <a href="{% url 'plant_detail' plant.pk %}" class="btn btn-outline">
                         Learn More <i class="fas fa-arrow-right"></i>
@@ -127,17 +171,110 @@
 </section>
 {% endif %}
 
-<!-- CTA -->
-<section class="cta">
+<!-- Feature Banner -->
+<section class="feature-banner-section">
     <div class="container">
-        <div class="cta-content">
-            <h2>Ready to Start Your Plant Journey?</h2>
-            <p>Browse our full collection and find the perfect green companions for your space — from easy succulents to lush tropicals.</p>
-            <a href="{% url 'plant_list' %}" class="btn btn-primary btn-large">
-                <i class="fas fa-leaf"></i> Explore All Plants
-            </a>
+        <div class="feature-banner-inner">
+            <div class="feature-banner-content">
+                <span class="section-label">For A Better Life</span>
+                <h2 class="feature-banner-title">Grow Plant For<br>A Better Life</h2>
+                <p>Cultivating plants enhances well-being and contributes to a healthier environment, building a more fulfilling life.</p>
+                <a href="{% url 'plant_list' %}" class="btn btn-primary btn-large">
+                    Explore Plants <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+            <div class="feature-banner-visual">
+                <div class="feature-banner-circle">
+                    <i class="fas fa-leaf"></i>
+                    <div class="feature-banner-ring feature-banner-ring--1"></div>
+                    <div class="feature-banner-ring feature-banner-ring--2"></div>
+                </div>
+            </div>
         </div>
     </div>
 </section>
 
+<!-- Care Steps -->
+<section class="care-steps-section">
+    <div class="container">
+        <span class="section-label" style="display:block; text-align:center;">How To Care</span>
+        <h2 class="section-title text-center">Steps to start taking<br>care of your plants</h2>
+        <p class="section-subtitle text-center">The right solution for the care of green and smart plants</p>
+
+        <div class="care-steps-grid">
+            <div class="care-step">
+                <div class="care-step-icon"><i class="fas fa-tint"></i></div>
+                <h3>Watering Schedule</h3>
+                <p>Water deeply but infrequently. Let soil dry between waterings to avoid root rot — when in doubt, wait a day.</p>
+            </div>
+            <div class="care-step">
+                <div class="care-step-icon"><i class="fas fa-bug"></i></div>
+                <h3>Pest Prevention</h3>
+                <p>Inspect leaves regularly for pests. Early detection makes treatment straightforward and keeps plants thriving.</p>
+            </div>
+            <div class="care-step">
+                <div class="care-step-icon"><i class="fas fa-cut"></i></div>
+                <h3>Pruning & Trimming</h3>
+                <p>Remove dead or yellowing leaves promptly. Regular pruning encourages new growth and maintains your plant's shape.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Full Banner -->
+<section class="cta-full-banner">
+    <div class="cta-full-banner-image">
+        <img src="{% static 'images/floral.jpg' %}" alt="Floral plants" class="cta-banner-img">
+    </div>
+    <div class="cta-full-banner-content">
+        <h2>Come with us how to grow your plants to be better and healthier</h2>
+        <p>Let us guide you through your plant journey — tips, insights, and expert advice to help your garden thrive naturally.</p>
+        <a href="{% url 'analyze' %}" class="btn btn-primary btn-large">
+            Analyze Your Plant <i class="fas fa-camera"></i>
+        </a>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+(function () {
+    const tabs = document.querySelectorAll('.plant-tab');
+    const cards = document.querySelectorAll('#featuredGrid .plant-card');
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+
+            const filter = tab.dataset.filter;
+            let shown = 0;
+
+            cards.forEach(card => {
+                let visible = false;
+                if (filter === 'all') {
+                    visible = true;
+                } else if (filter === 'easy') {
+                    visible = card.dataset.difficulty === 'easy';
+                } else if (filter === 'pet') {
+                    visible = card.dataset.pet === 'true';
+                }
+
+                if (visible) {
+                    card.style.display = '';
+                    shown++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            // If nothing matches, show all
+            if (shown === 0) {
+                cards.forEach(c => c.style.display = '');
+            }
+        });
+    });
+})();
+</script>
 {% endblock %}

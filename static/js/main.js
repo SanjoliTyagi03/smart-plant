@@ -401,7 +401,7 @@ const additionalStyles = `
     .ripple {
         position: absolute;
         border-radius: 50%;
-        background: rgba(77, 124, 89, 0.3);
+        background: rgba(163, 163, 128, 0.25);
         transform: scale(0);
         animation: ripple-animation 0.6s linear;
         pointer-events: none;
@@ -419,7 +419,7 @@ const additionalStyles = `
     }
     
     @keyframes highlight {
-        0% { background-color: var(--light-green); }
+        0% { background-color: var(--soft-accent); }
         100% { background-color: transparent; }
     }
     
@@ -433,15 +433,15 @@ const additionalStyles = `
     }
     
     .error-state {
-        background: linear-gradient(135deg, #ffebee, #ffcdd2) !important;
+        background: linear-gradient(135deg, #F2F8F2, #E4EEE4) !important;
     }
     
     .error-state i {
-        color: #f44336 !important;
+        color: #B85C5C !important;
     }
     
     .loading-shimmer {
-        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+        background: linear-gradient(90deg, #F5F3E6 25%, #E8E4D4 50%, #F5F3E6 75%);
         background-size: 200% 100%;
         animation: shimmer 1.5s infinite;
     }
@@ -582,7 +582,7 @@ function initParticleEffect() {
         draw() {
             ctx.beginPath();
             ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(77, 124, 89, ${this.opacity})`;
+            ctx.fillStyle = `rgba(163, 163, 128, ${this.opacity})`;
             ctx.fill();
         }
     }

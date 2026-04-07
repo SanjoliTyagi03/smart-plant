@@ -39,12 +39,12 @@
 
     <!-- Stylesheets -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer">
     
     <!-- Theme color -->
-    <meta name="theme-color" content="#2d5a27">
-    <meta name="msapplication-TileColor" content="#2d5a27">
+    <meta name="theme-color" content="#1E3318">
+    <meta name="msapplication-TileColor" content="#1E3318">
     
     {% block extra_head %}{% endblock %}
 </head>
@@ -69,6 +69,18 @@
                     <a href="{% url 'analyze' %}" class="nav-link {% if request.resolver_match.url_name == 'analyze' %}active{% endif %}" role="menuitem">Analyze</a>
                 </li>
             </ul>
+            <div class="nav-auth">
+                {% if user.is_authenticated %}
+                    <span class="nav-username"><i class="fas fa-user-circle"></i> {{ user.username }}</span>
+                    <form method="post" action="{% url 'logout' %}" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-ghost btn-sm">Logout</button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'login' %}" class="btn btn-ghost btn-sm {% if request.resolver_match.url_name == 'login' %}active{% endif %}">Login</a>
+                    <a href="{% url 'signup' %}" class="btn btn-primary btn-sm {% if request.resolver_match.url_name == 'signup' %}active{% endif %}">Sign Up</a>
+                {% endif %}
+            </div>
             <button class="hamburger" aria-label="Toggle navigation menu" aria-expanded="false">
                 <span class="bar" aria-hidden="true"></span>
                 <span class="bar" aria-hidden="true"></span>
@@ -82,7 +94,29 @@
         <a href="{% url 'home' %}" class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">Home</a>
         <a href="{% url 'plant_list' %}" class="nav-link {% if request.resolver_match.url_name == 'plant_list' or request.resolver_match.url_name == 'plant_detail' %}active{% endif %}">Plants</a>
         <a href="{% url 'analyze' %}" class="nav-link {% if request.resolver_match.url_name == 'analyze' %}active{% endif %}">Analyze</a>
+        {% if user.is_authenticated %}
+            <span class="nav-link" style="opacity:0.6;cursor:default;"><i class="fas fa-user-circle"></i> {{ user.username }}</span>
+            <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="nav-link" style="background:none;border:none;width:100%;text-align:left;cursor:pointer;">Logout</button>
+            </form>
+        {% else %}
+            <a href="{% url 'login' %}" class="nav-link {% if request.resolver_match.url_name == 'login' %}active{% endif %}">Login</a>
+            <a href="{% url 'signup' %}" class="nav-link {% if request.resolver_match.url_name == 'signup' %}active{% endif %}">Sign Up</a>
+        {% endif %}
     </div>
+
+    {% if messages %}
+    <div class="messages-container" role="alert" aria-live="polite">
+        {% for message in messages %}
+        <div class="message message--{{ message.tags }}">
+            <i class="fas {% if message.tags == 'success' %}fa-check-circle{% elif message.tags == 'error' %}fa-exclamation-circle{% else %}fa-info-circle{% endif %}"></i>
+            {{ message }}
+            <button class="message-close" onclick="this.parentElement.remove()" aria-label="Dismiss">&times;</button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
 
     <main id="main-content" role="main">
         {% block content %}
@@ -126,7 +160,7 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2025 PlantCare. Made with <i class="fas fa-heart"></i> for plant lovers.</p>
+                <p>&copy; 2026 PlantCare. Made with <i class="fas fa-heart"></i> by Sanjoli.</p>
             </div>
         </div>
     </footer>

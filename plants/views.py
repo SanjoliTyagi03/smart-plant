@@ -1,7 +1,72 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Q
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.models import User
+from django.contrib import messages
+from django import forms
 from .models import Plant
 from .gemini import analyze_plant_image
+
+
+class SignUpForm(forms.Form):
+    username = forms.CharField(max_length=150, widget=forms.TextInput(attrs={'placeholder': 'Choose a username', 'autocomplete': 'username'}))
+    email = forms.EmailField(required=False, widget=forms.EmailInput(attrs={'placeholder': 'Email address (optional)', 'autocomplete': 'email'}))
+    password1 = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': 'Create a password', 'autocomplete': 'new-password'}), label='Password')
+    password2 = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': 'Confirm your password', 'autocomplete': 'new-password'}), label='Confirm Password')
+
+    def clean_username(self):
+        username = self.cleaned_data['username']
+        if User.objects.filter(username=username).exists():
+            raise forms.ValidationError('This username is already taken.')
+        return username
+
+    def clean(self):
+        cleaned = super().clean()
+        p1 = cleaned.get('password1')
+        p2 = cleaned.get('password2')
+        if p1 and p2 and p1 != p2:
+            self.add_error('password2', 'Passwords do not match.')
+        if p1 and len(p1) < 8:
+            self.add_error('password1', 'Password must be at least 8 characters.')
+        return cleaned
+
+
+def signup_view(request):
+    if request.user.is_authenticated:
+        return redirect('home')
+    form = SignUpForm(request.POST or None)
+    if request.method == 'POST' and form.is_valid():
+        user = User.objects.create_user(
+            username=form.cleaned_data['username'],
+            email=form.cleaned_data.get('email', ''),
+            password=form.cleaned_data['password1'],
+        )
+        login(request, user)
+        messages.success(request, f'Welcome, {user.username}! Your account has been created.')
+        return redirect('home')
+    return render(request, 'plants/signup.html', {'form': form})
+
+
+def login_view(request):
+    if request.user.is_authenticated:
+        return redirect('home')
+    form = AuthenticationForm(request, data=request.POST or None)
+    if request.method == 'POST' and form.is_valid():
+        user = form.get_user()
+        login(request, user)
+        messages.success(request, f'Welcome back, {user.username}!')
+        next_url = request.GET.get('next') or 'home'
+        return redirect(next_url)
+    return render(request, 'plants/login.html', {'form': form})
+
+
+def logout_view(request):
+    if request.method == 'POST':
+        logout(request)
+        messages.info(request, 'You have been logged out.')
+    return redirect('home')
 
 
 def home(request):
@@ -71,6 +136,7 @@ def plant_detail(request, pk):
     return render(request, 'plants/plant_detail.html', context)
 
 
+@login_required
 def analyze(request):
     """Plant analyzer page — upload image, get Gemini health/care report"""
     result = None

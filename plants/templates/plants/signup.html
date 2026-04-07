@@ -1,0 +1,153 @@
+{% extends 'plants/base.html' %}
+{% load static %}
+
+{% block title %}Sign Up — PlantCare{% endblock %}
+{% block meta_description %}Create your free PlantCare account to analyze plants, get personalized care guides, and more.{% endblock %}
+
+{% block content %}
+<section class="auth-section">
+    <div class="auth-split">
+        <!-- Left: Photo panel -->
+        <div class="auth-visual" style="background-image: url('{% static 'images/hero-bg.jpg' %}');">
+            <div class="auth-visual-overlay"></div>
+            <div class="auth-visual-content">
+                <a href="{% url 'home' %}" class="auth-visual-logo">
+                    <i class="fas fa-leaf"></i> PlantCare
+                </a>
+                <div class="auth-visual-tagline">
+                    <h2>Join thousands of<br><em>plant enthusiasts.</em></h2>
+                    <p>Create your free account and start your plant care journey today.</p>
+                </div>
+                <div class="auth-visual-badges">
+                    <span><i class="fas fa-camera"></i> AI Plant Analysis</span>
+                    <span><i class="fas fa-leaf"></i> 40+ Plant Guides</span>
+                    <span><i class="fas fa-wind"></i> Air Purifying Tips</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Form panel -->
+        <div class="auth-form-panel">
+            <div class="auth-form-inner">
+                <div class="auth-form-header">
+                    <h1>Create Account</h1>
+                    <p>Already have an account? <a href="{% url 'login' %}">Sign in</a></p>
+                </div>
+
+                <form method="post" action="{% url 'signup' %}" class="auth-form" novalidate>
+                    {% csrf_token %}
+
+                    <div class="auth-field">
+                        <label for="id_username">
+                            <i class="fas fa-user"></i> Username
+                        </label>
+                        <input
+                            type="text"
+                            name="username"
+                            id="id_username"
+                            placeholder="Choose a username"
+                            autocomplete="username"
+                            value="{{ form.username.value|default:'' }}"
+                            class="auth-input {% if form.username.errors %}auth-input--error{% endif %}"
+                            required
+                        >
+                        {% if form.username.errors %}
+                        <span class="auth-field-error"><i class="fas fa-exclamation-triangle"></i> {{ form.username.errors.0 }}</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="auth-field">
+                        <label for="id_email">
+                            <i class="fas fa-envelope"></i> Email <span class="auth-optional">(optional)</span>
+                        </label>
+                        <input
+                            type="email"
+                            name="email"
+                            id="id_email"
+                            placeholder="your@email.com"
+                            autocomplete="email"
+                            value="{{ form.email.value|default:'' }}"
+                            class="auth-input {% if form.email.errors %}auth-input--error{% endif %}"
+                        >
+                        {% if form.email.errors %}
+                        <span class="auth-field-error"><i class="fas fa-exclamation-triangle"></i> {{ form.email.errors.0 }}</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="auth-field">
+                        <label for="id_password1">
+                            <i class="fas fa-lock"></i> Password
+                        </label>
+                        <div class="auth-input-wrap">
+                            <input
+                                type="password"
+                                name="password1"
+                                id="id_password1"
+                                placeholder="Create a password (min 8 chars)"
+                                autocomplete="new-password"
+                                class="auth-input {% if form.password1.errors %}auth-input--error{% endif %}"
+                                required
+                            >
+                            <button type="button" class="auth-toggle-pw" aria-label="Toggle password visibility" onclick="togglePassword(this)">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        {% if form.password1.errors %}
+                        <span class="auth-field-error"><i class="fas fa-exclamation-triangle"></i> {{ form.password1.errors.0 }}</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="auth-field">
+                        <label for="id_password2">
+                            <i class="fas fa-lock"></i> Confirm Password
+                        </label>
+                        <div class="auth-input-wrap">
+                            <input
+                                type="password"
+                                name="password2"
+                                id="id_password2"
+                                placeholder="Repeat your password"
+                                autocomplete="new-password"
+                                class="auth-input {% if form.password2.errors %}auth-input--error{% endif %}"
+                                required
+                            >
+                            <button type="button" class="auth-toggle-pw" aria-label="Toggle password visibility" onclick="togglePassword(this)">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        {% if form.password2.errors %}
+                        <span class="auth-field-error"><i class="fas fa-exclamation-triangle"></i> {{ form.password2.errors.0 }}</span>
+                        {% endif %}
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-full">
+                        <i class="fas fa-seedling"></i> Create My Account
+                    </button>
+                </form>
+
+                <div class="auth-divider"><span>or</span></div>
+
+                <div class="auth-form-footer">
+                    <p>Already have an account? <a href="{% url 'login' %}">Sign in here</a> to continue exploring plants.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function togglePassword(btn) {
+    const input = btn.previousElementSibling;
+    const icon = btn.querySelector('i');
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.replace('fa-eye', 'fa-eye-slash');
+    } else {
+        input.type = 'password';
+        icon.classList.replace('fa-eye-slash', 'fa-eye');
+    }
+}
+</script>
+{% endblock %}
