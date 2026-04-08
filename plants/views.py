@@ -1,12 +1,13 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Q
+from django.core.paginator import Paginator
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django import forms
-from .models import Plant
+from .models import BlogPost, Plant
 from .gemini import analyze_plant_image
 
 
@@ -155,3 +156,21 @@ def analyze(request):
                 result = None
 
     return render(request, 'plants/analyze.html', {'result': result, 'error': error})
+
+
+def about(request):
+    return render(request, 'plants/about.html')
+
+
+def blog_list(request):
+    page = request.GET.get('page', 1)
+    queryset = BlogPost.objects.all()
+    paginator = Paginator(queryset, 9)
+    blogs = paginator.get_page(page)
+    return render(request, 'plants/blog_list.html', {'blogs': blogs})
+
+
+def blog_detail(request, pk):
+    blog = get_object_or_404(BlogPost, pk=pk)
+    recent = BlogPost.objects.exclude(pk=pk).order_by('-created_at')[:3]
+    return render(request, 'plants/blog_detail.html', {'blog': blog, 'recent': recent})

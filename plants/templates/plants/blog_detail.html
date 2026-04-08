@@ -1,0 +1,394 @@
+{% extends 'plants/base.html' %}
+{% load static %}
+
+{% block title %}{{ blog.title }} | PlantCare Blog{% endblock %}
+{% block meta_description %}{{ blog.excerpt|default:blog.content|truncatewords:25 }}{% endblock %}
+
+{% block extra_head %}
+<style>
+/* ── Blog detail ────────────────────────── */
+
+.blog-detail-hero {
+  background: var(--primary);
+  padding: 72px 0 60px;
+  position: relative; overflow: hidden;
+}
+.blog-detail-hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 70% 80% at 30% 50%, rgba(58,122,58,0.28) 0%, transparent 65%);
+  pointer-events: none;
+}
+.blog-detail-hero-content {
+  position: relative; z-index: 1;
+  max-width: 800px; margin: 0 auto; padding: 0 24px;
+  text-align: center;
+}
+.blog-detail-back {
+  display: inline-flex; align-items: center; gap: 8px;
+  color: rgba(255,255,255,0.6); font-size: 0.82rem; font-weight: 600;
+  letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 32px;
+  transition: color 0.2s ease;
+  text-decoration: none;
+}
+.blog-detail-back:hover { color: var(--golden); }
+.blog-detail-date {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--golden); margin-bottom: 20px;
+}
+.blog-detail-title {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  font-weight: 700; color: #fff; line-height: 1.2; margin-bottom: 24px;
+}
+.blog-detail-meta {
+  display: flex; align-items: center; justify-content: center; gap: 24px;
+  flex-wrap: wrap;
+}
+.blog-detail-author {
+  display: flex; align-items: center; gap: 10px;
+  color: rgba(255,255,255,0.7); font-size: 0.88rem; font-weight: 600;
+}
+.blog-detail-author-avatar {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: var(--golden); color: var(--primary);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.75rem; font-weight: 800;
+}
+.blog-detail-divider-dot {
+  width: 4px; height: 4px; border-radius: 50%;
+  background: rgba(255,255,255,0.3);
+}
+.blog-detail-reading-time {
+  color: rgba(255,255,255,0.55); font-size: 0.85rem;
+  display: flex; align-items: center; gap: 6px;
+}
+
+/* ── Cover Image ────────────────────────── */
+.blog-detail-cover {
+  max-width: 900px; margin: 0 auto; padding: 0 24px;
+  transform: translateY(40px);
+}
+.blog-detail-cover img {
+  width: 100%; max-height: 480px; object-fit: cover;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl);
+}
+.blog-detail-cover-placeholder {
+  width: 100%; height: 360px;
+  background: linear-gradient(135deg, var(--blush) 0%, var(--soft-accent) 100%);
+  border-radius: var(--radius-xl);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 6rem;
+  box-shadow: var(--shadow-xl);
+}
+
+/* ── Content ────────────────────────────── */
+.blog-detail-body {
+  padding: 80px 0 80px;
+  background: var(--base);
+}
+.blog-detail-content-wrap {
+  max-width: 760px; margin: 0 auto; padding: 0 24px;
+}
+
+/* Blog prose styles */
+.blog-prose {
+  font-size: 1.1rem;
+  line-height: 1.85;
+  color: var(--text-primary);
+}
+.blog-prose p { margin-bottom: 1.6em; }
+.blog-prose h2 {
+  font-family: var(--font-display); font-size: 1.8rem; font-weight: 700;
+  color: var(--primary); margin: 2em 0 0.8em; line-height: 1.3;
+}
+.blog-prose h3 {
+  font-family: var(--font-display); font-size: 1.35rem; font-weight: 700;
+  color: var(--primary); margin: 1.6em 0 0.6em;
+}
+.blog-prose ul, .blog-prose ol {
+  padding-left: 1.6em; margin-bottom: 1.6em; list-style: disc;
+}
+.blog-prose li { margin-bottom: 0.5em; }
+.blog-prose blockquote {
+  border-left: 4px solid var(--golden); padding: 16px 24px; margin: 2em 0;
+  background: var(--soft-accent2); border-radius: 0 var(--radius) var(--radius) 0;
+  font-style: italic; color: var(--text-muted); font-size: 1.05rem;
+}
+.blog-prose strong { color: var(--primary); font-weight: 700; }
+.blog-prose a { color: var(--blush-accent); text-decoration: underline; text-underline-offset: 3px; }
+.blog-prose img { border-radius: var(--radius); margin: 1.5em 0; box-shadow: var(--shadow-md); }
+.blog-prose code {
+  background: var(--soft-accent); padding: 2px 6px; border-radius: 4px;
+  font-size: 0.9em; color: var(--primary);
+}
+.blog-prose pre {
+  background: var(--primary); color: var(--golden); padding: 20px 24px;
+  border-radius: var(--radius); margin: 1.5em 0; overflow-x: auto;
+}
+.blog-prose pre code { background: none; padding: 0; color: inherit; }
+.blog-prose hr {
+  border: none; border-top: 2px solid var(--border); margin: 2.5em 0;
+}
+
+/* ── Share bar ──────────────────────────── */
+.blog-share {
+  margin-top: 56px; padding-top: 36px; border-top: 2px solid var(--border);
+  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+}
+.blog-share-label {
+  font-size: 0.78rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--text-muted);
+}
+.blog-share-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 9px 18px; border-radius: var(--radius-full);
+  font-size: 0.85rem; font-weight: 600;
+  border: 1px solid var(--border); color: var(--text-muted);
+  transition: var(--transition); background: var(--surface);
+  text-decoration: none;
+}
+.blog-share-btn:hover { background: var(--blush); border-color: var(--blush-accent); color: var(--primary); }
+
+/* ── Author card ────────────────────────── */
+.blog-author-card {
+  margin-top: 56px; padding: 32px;
+  background: var(--soft-accent2); border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  display: flex; gap: 24px; align-items: flex-start;
+}
+.blog-author-card-avatar {
+  width: 64px; height: 64px; border-radius: 50%; flex-shrink: 0;
+  background: var(--primary); color: var(--golden);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-size: 1.5rem; font-weight: 700;
+}
+.blog-author-card-info h4 {
+  font-weight: 700; color: var(--primary); margin-bottom: 4px;
+}
+.blog-author-card-info .blog-author-role {
+  font-size: 0.78rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--blush-accent); margin-bottom: 10px;
+}
+.blog-author-card-info p {
+  font-size: 0.92rem; color: var(--text-muted); line-height: 1.7;
+}
+
+/* ── Recent posts ───────────────────────── */
+.blog-recent-section {
+  padding: 72px 0 100px;
+  background: var(--soft-accent2);
+}
+.blog-recent-section .section-label { display: block; text-align: center; }
+.blog-recent-section .section-title { text-align: center; margin-bottom: 48px; }
+.blog-recent-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px;
+  max-width: 1100px; margin: 0 auto; padding: 0 24px;
+}
+.blog-recent-card {
+  background: var(--surface); border-radius: var(--radius-lg);
+  overflow: hidden; border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm); display: flex; flex-direction: column;
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+  text-decoration: none; color: inherit;
+}
+.blog-recent-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-4px); }
+.blog-recent-card-img {
+  aspect-ratio: 16/9; background: var(--blush); overflow: hidden;
+}
+.blog-recent-card-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
+.blog-recent-card:hover .blog-recent-card-img img { transform: scale(1.06); }
+.blog-recent-card-img-placeholder {
+  width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+  font-size: 2.5rem;
+}
+.blog-recent-card-body { padding: 20px 20px 16px; flex: 1; display: flex; flex-direction: column; }
+.blog-recent-card-date {
+  font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--text-light); margin-bottom: 8px; display: flex; align-items: center; gap: 5px;
+}
+.blog-recent-card-title {
+  font-family: var(--font-display); font-size: 1.05rem; font-weight: 700;
+  color: var(--primary); line-height: 1.35; flex: 1;
+  margin-bottom: 12px;
+}
+.blog-recent-card-link {
+  font-size: 0.8rem; font-weight: 700; color: var(--blush-accent);
+  display: flex; align-items: center; gap: 5px;
+  transition: gap 0.2s;
+}
+.blog-recent-card:hover .blog-recent-card-link { gap: 9px; }
+
+.blog-recent-empty {
+  grid-column: 1 / -1; text-align: center; padding: 40px 0;
+  color: var(--text-muted);
+}
+
+@media (max-width: 900px) {
+  .blog-recent-grid { grid-template-columns: 1fr 1fr; }
+  .blog-author-card { flex-direction: column; }
+}
+@media (max-width: 600px) {
+  .blog-recent-grid { grid-template-columns: 1fr; }
+  .blog-detail-cover { transform: none; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<section class="blog-detail-hero">
+  <div class="blog-detail-hero-content">
+    <a href="{% url 'blog_list' %}" class="blog-detail-back">
+      <i class="fas fa-arrow-left"></i> Back to Blog
+    </a>
+    <div class="blog-detail-date">
+      <i class="fas fa-calendar-alt"></i>
+      {{ blog.created_at|date:"F j, Y" }}
+    </div>
+    <h1 class="blog-detail-title">{{ blog.title }}</h1>
+    <div class="blog-detail-meta">
+      <div class="blog-detail-author">
+        <div class="blog-detail-author-avatar">SJ</div>
+        Sanjoli
+      </div>
+      <div class="blog-detail-divider-dot"></div>
+      <div class="blog-detail-reading-time">
+        <i class="fas fa-clock"></i>
+        <span id="reading-time">Reading time...</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% if blog.get_image_url %}
+<div class="blog-detail-cover">
+  <img src="{{ blog.get_image_url }}" alt="{{ blog.title }}">
+</div>
+{% else %}
+<div style="background:var(--primary); padding-bottom: 0;">
+  <div class="blog-detail-cover">
+    <div class="blog-detail-cover-placeholder">🌿</div>
+  </div>
+</div>
+{% endif %}
+
+<section class="blog-detail-body">
+  <div class="blog-detail-content-wrap">
+    <div class="blog-prose" id="blog-content">
+      {{ blog.content|linebreaks }}
+    </div>
+
+    <!-- Share -->
+    <div class="blog-share">
+      <span class="blog-share-label">Share</span>
+      <a href="https://twitter.com/intent/tweet?text={{ blog.title|urlencode }}&url={{ request.build_absolute_uri }}"
+         target="_blank" rel="noopener" class="blog-share-btn">
+        <i class="fab fa-x-twitter"></i> Twitter
+      </a>
+      <button class="blog-share-btn" onclick="copyLink(this)">
+        <i class="fas fa-link"></i> <span>Copy link</span>
+      </button>
+    </div>
+
+    <!-- Author -->
+    <div class="blog-author-card">
+      <div class="blog-author-card-avatar">SJ</div>
+      <div class="blog-author-card-info">
+        <h4>Sanjoli</h4>
+        <div class="blog-author-role">Founder, PlantCare</div>
+        <p>Plant parent who learned everything the hard way — by watching plants die. Now dedicated to making sure no one else has to go through that alone.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Recent posts -->
+<section class="blog-recent-section">
+  <div class="container">
+    <span class="section-label"><i class="fas fa-bookmark"></i> More from the blog</span>
+    <h2 class="section-title">Keep Reading</h2>
+
+    <div class="blog-recent-grid">
+      {% if recent %}
+        {% for post in recent %}
+        <a href="{% url 'blog_detail' post.pk %}" class="blog-recent-card">
+          <div class="blog-recent-card-img">
+            {% if post.get_image_url %}
+              <img src="{{ post.get_image_url }}" alt="{{ post.title }}" loading="lazy">
+            {% else %}
+              <div class="blog-recent-card-img-placeholder">🌱</div>
+            {% endif %}
+          </div>
+          <div class="blog-recent-card-body">
+            <div class="blog-recent-card-date">
+              <i class="fas fa-calendar-alt"></i>
+              {{ post.created_at|date:"M j, Y" }}
+            </div>
+            <div class="blog-recent-card-title">{{ post.title }}</div>
+            <div class="blog-recent-card-link">Read more <i class="fas fa-arrow-right"></i></div>
+          </div>
+        </a>
+        {% endfor %}
+      {% else %}
+        <div class="blog-recent-empty">
+          <i class="fas fa-leaf" style="font-size:2rem; opacity:0.3; margin-bottom:12px; display:block;"></i>
+          More posts coming soon.
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+(function () {
+  // Reading time estimate
+  const content = document.getElementById('blog-content');
+  const rtEl = document.getElementById('reading-time');
+  if (content && rtEl) {
+    const words = content.innerText.trim().split(/\s+/).length;
+    const mins = Math.max(1, Math.round(words / 200));
+    rtEl.textContent = mins + ' min read';
+  }
+
+  // Copy link
+  window.copyLink = function (btn) {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+      const span = btn.querySelector('span');
+      span.textContent = 'Copied!';
+      btn.style.background = 'var(--blush)';
+      btn.style.borderColor = 'var(--blush-accent)';
+      btn.style.color = 'var(--primary)';
+      setTimeout(() => {
+        span.textContent = 'Copy link';
+        btn.style.background = '';
+        btn.style.borderColor = '';
+        btn.style.color = '';
+      }, 2000);
+    });
+  };
+
+  // Smooth image transition when cover loads
+  const coverImg = document.querySelector('.blog-detail-cover img');
+  if (coverImg) {
+    coverImg.style.opacity = '0';
+    coverImg.style.transition = 'opacity 0.5s ease, transform 0.6s ease';
+    coverImg.style.transform = 'translateY(10px)';
+    if (coverImg.complete) {
+      coverImg.style.opacity = '1';
+      coverImg.style.transform = 'translateY(0)';
+    } else {
+      coverImg.addEventListener('load', () => {
+        coverImg.style.opacity = '1';
+        coverImg.style.transform = 'translateY(0)';
+      });
+    }
+  }
+})();
+</script>
+{% endblock %}

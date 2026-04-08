@@ -1,0 +1,741 @@
+{% extends 'plants/base.html' %}
+{% load static %}
+
+{% block title %}About — My Plant Journey | PlantCare{% endblock %}
+{% block meta_description %}The story behind PlantCare — how losing plants to ignorance sparked a mission to help every plant parent grow with confidence.{% endblock %}
+
+{% block extra_head %}
+<style>
+/* ── About page ────────────────────────────── */
+
+/* Hero */
+.about-hero {
+  position: relative;
+  min-height: 92vh;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  background: var(--primary);
+}
+.about-hero-bg {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 60% 80% at 80% 50%, rgba(215,206,147,0.13) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 60% at 10% 80%, rgba(58,122,58,0.25) 0%, transparent 60%);
+}
+.about-hero-leaves {
+  position: absolute; inset: 0; pointer-events: none; overflow: hidden;
+}
+.about-hero-leaf {
+  position: absolute; font-size: 6rem; opacity: 0.06; color: #fff;
+  animation: leafFloat 8s ease-in-out infinite;
+}
+.about-hero-leaf:nth-child(1) { top: 10%; left: 5%;  animation-delay: 0s; font-size: 5rem; }
+.about-hero-leaf:nth-child(2) { top: 60%; left: 2%;  animation-delay: 1.5s; font-size: 3rem; }
+.about-hero-leaf:nth-child(3) { top: 20%; right: 8%; animation-delay: 2s; font-size: 7rem; }
+.about-hero-leaf:nth-child(4) { top: 70%; right: 5%; animation-delay: 0.8s; font-size: 4rem; }
+.about-hero-leaf:nth-child(5) { top: 45%; right: 20%; animation-delay: 3s; font-size: 2.5rem; }
+
+@keyframes leafFloat {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  33% { transform: translateY(-18px) rotate(6deg); }
+  66% { transform: translateY(8px) rotate(-4deg); }
+}
+
+.about-hero-container {
+  position: relative; z-index: 2;
+  max-width: 1200px; margin: 0 auto; padding: 100px 24px 80px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;
+}
+.about-hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 0.75rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--golden); margin-bottom: 24px;
+}
+.about-hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.8rem, 6vw, 5rem);
+  font-weight: 700; line-height: 1.1; color: #fff;
+  margin-bottom: 28px;
+}
+.about-hero-title em { color: var(--golden); font-style: italic; }
+.about-hero-subtitle {
+  font-size: 1.15rem; color: rgba(255,255,255,0.78);
+  line-height: 1.8; max-width: 480px; margin-bottom: 44px;
+}
+.about-hero-scroll {
+  display: inline-flex; align-items: center; gap: 12px;
+  color: rgba(255,255,255,0.5); font-size: 0.82rem; letter-spacing: 0.1em; text-transform: uppercase;
+  animation: pulseDown 2.2s ease-in-out infinite;
+}
+@keyframes pulseDown {
+  0%, 100% { transform: translateY(0); opacity: 0.5; }
+  50% { transform: translateY(6px); opacity: 1; }
+}
+
+/* Hero visual — stacked plant cards */
+.about-hero-visual {
+  position: relative; height: 480px;
+}
+.hero-visual-card {
+  position: absolute; border-radius: var(--radius-lg);
+  overflow: hidden; background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.15);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+}
+.hero-visual-card--main {
+  width: 260px; height: 340px; top: 20px; left: 60px;
+  animation: floatCard1 6s ease-in-out infinite;
+}
+.hero-visual-card--side {
+  width: 180px; height: 220px; bottom: 30px; right: 20px;
+  animation: floatCard2 6s ease-in-out infinite 1s;
+}
+.hero-visual-card--accent {
+  width: 120px; height: 120px; top: 0; right: 80px;
+  animation: floatCard3 6s ease-in-out infinite 2s;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 3rem;
+}
+@keyframes floatCard1 {
+  0%, 100% { transform: translateY(0) rotate(-2deg); }
+  50% { transform: translateY(-12px) rotate(-1deg); }
+}
+@keyframes floatCard2 {
+  0%, 100% { transform: translateY(0) rotate(3deg); }
+  50% { transform: translateY(-8px) rotate(4deg); }
+}
+@keyframes floatCard3 {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-14px) rotate(5deg); }
+}
+.hero-visual-card-inner {
+  padding: 20px;
+  height: 100%;
+  display: flex; flex-direction: column; justify-content: flex-end;
+}
+.hero-visual-card-icon {
+  font-size: 4rem; text-align: center; padding: 24px 0 12px;
+  flex: 1; display: flex; align-items: center; justify-content: center;
+}
+.hero-visual-card-label {
+  font-size: 0.82rem; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; color: rgba(255,255,255,0.6); margin-bottom: 4px;
+}
+.hero-visual-card-value {
+  font-family: var(--font-display); font-size: 1.6rem; font-weight: 700; color: #fff;
+}
+.hero-visual-orb {
+  position: absolute; border-radius: 50%; pointer-events: none;
+}
+.hero-visual-orb--1 {
+  width: 300px; height: 300px; top: -60px; right: -60px;
+  background: radial-gradient(circle, rgba(215,206,147,0.15) 0%, transparent 70%);
+}
+.hero-visual-orb--2 {
+  width: 200px; height: 200px; bottom: 0; left: 0;
+  background: radial-gradient(circle, rgba(58,122,58,0.2) 0%, transparent 70%);
+}
+
+/* ── Intro Quote ────────────────────────────── */
+.about-quote-section {
+  background: var(--soft-accent2);
+  padding: 80px 0;
+  text-align: center;
+  position: relative; overflow: hidden;
+}
+.about-quote-section::before {
+  content: '\201C';
+  position: absolute; top: -40px; left: 50%; transform: translateX(-50%);
+  font-family: var(--font-display); font-size: 20rem; font-weight: 900;
+  color: rgba(30,51,24,0.04); line-height: 1; pointer-events: none;
+  user-select: none;
+}
+.about-quote {
+  position: relative; z-index: 1;
+  font-family: var(--font-display); font-style: italic;
+  font-size: clamp(1.5rem, 3vw, 2.2rem);
+  color: var(--primary); line-height: 1.5; max-width: 760px; margin: 0 auto 24px;
+}
+.about-quote-attr {
+  font-size: 0.88rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* ── Journey Timeline ───────────────────────── */
+.journey-section {
+  padding: 100px 0;
+  background: var(--surface);
+}
+.journey-section .section-label { display: block; text-align: center; }
+.journey-section .section-title { text-align: center; margin-bottom: 72px; }
+
+.timeline {
+  position: relative;
+  max-width: 900px; margin: 0 auto;
+  padding: 0 24px;
+}
+.timeline::before {
+  content: '';
+  position: absolute; left: 50%; top: 0; bottom: 0; width: 2px;
+  background: linear-gradient(to bottom, transparent, var(--golden), var(--blush-accent), transparent);
+  transform: translateX(-50%);
+}
+
+.timeline-item {
+  display: grid; grid-template-columns: 1fr 60px 1fr;
+  gap: 0; margin-bottom: 72px; align-items: start;
+  opacity: 0; transform: translateY(40px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.timeline-item.visible { opacity: 1; transform: translateY(0); }
+
+.timeline-item:nth-child(odd) .timeline-content { grid-column: 1; text-align: right; padding-right: 40px; }
+.timeline-item:nth-child(odd) .timeline-dot    { grid-column: 2; }
+.timeline-item:nth-child(odd) .timeline-empty  { grid-column: 3; }
+
+.timeline-item:nth-child(even) .timeline-empty   { grid-column: 1; }
+.timeline-item:nth-child(even) .timeline-dot     { grid-column: 2; }
+.timeline-item:nth-child(even) .timeline-content { grid-column: 3; text-align: left; padding-left: 40px; }
+
+.timeline-dot {
+  display: flex; align-items: flex-start; justify-content: center;
+  padding-top: 6px;
+}
+.timeline-dot-inner {
+  width: 48px; height: 48px; border-radius: 50%;
+  background: var(--primary); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; flex-shrink: 0;
+  box-shadow: 0 0 0 6px var(--blush), 0 0 0 8px var(--golden);
+  position: relative; z-index: 1;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.timeline-dot-inner:hover {
+  transform: scale(1.15);
+  box-shadow: 0 0 0 8px var(--blush), 0 0 0 12px var(--golden);
+}
+
+.timeline-content {
+  padding-top: 0;
+}
+.timeline-tag {
+  display: inline-block; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; padding: 3px 10px; border-radius: var(--radius-full);
+  background: var(--blush); color: var(--blush-dark); margin-bottom: 10px;
+}
+.timeline-content h3 {
+  font-family: var(--font-display); font-size: 1.4rem; font-weight: 700;
+  color: var(--primary); margin-bottom: 10px; line-height: 1.3;
+}
+.timeline-content p {
+  font-size: 0.97rem; color: var(--text-muted); line-height: 1.75;
+}
+.timeline-emoji {
+  font-size: 2rem; margin-bottom: 12px;
+  display: block;
+}
+
+/* ── Stats ──────────────────────────────────── */
+.about-stats-section {
+  padding: 80px 0;
+  background: var(--primary);
+  position: relative; overflow: hidden;
+}
+.about-stats-section::before {
+  content: '';
+  position: absolute; top: -100px; right: -100px;
+  width: 400px; height: 400px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(215,206,147,0.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+.about-stats-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 40px;
+  max-width: 1000px; margin: 0 auto; padding: 0 24px;
+  text-align: center;
+}
+.about-stat {
+  opacity: 0; transform: translateY(30px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.about-stat.visible { opacity: 1; transform: translateY(0); }
+.about-stat:nth-child(2) { transition-delay: 0.1s; }
+.about-stat:nth-child(3) { transition-delay: 0.2s; }
+.about-stat:nth-child(4) { transition-delay: 0.3s; }
+
+.about-stat-number {
+  font-family: var(--font-display); font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 700; color: var(--golden); line-height: 1; margin-bottom: 8px;
+}
+.about-stat-label {
+  font-size: 0.88rem; color: rgba(255,255,255,0.6); letter-spacing: 0.06em; font-weight: 500;
+}
+.about-stat-icon {
+  font-size: 1.4rem; color: rgba(215,206,147,0.5); margin-bottom: 12px;
+}
+
+/* ── Mission ────────────────────────────────── */
+.mission-section {
+  padding: 100px 0;
+  background: var(--base);
+}
+.mission-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 80px;
+  max-width: 1200px; margin: 0 auto; padding: 0 24px;
+  align-items: center;
+}
+.mission-visual {
+  position: relative;
+}
+.mission-visual-ring {
+  width: 380px; height: 380px; border-radius: 50%;
+  background: var(--blush); margin: 0 auto;
+  display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: visible;
+  animation: rotateSlow 30s linear infinite;
+}
+@keyframes rotateSlow {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.mission-visual-ring-inner {
+  width: 300px; height: 300px; border-radius: 50%;
+  background: var(--primary);
+  display: flex; align-items: center; justify-content: center;
+  animation: rotateSlow 30s linear infinite reverse;
+}
+.mission-visual-icon {
+  font-size: 5rem; color: var(--golden);
+}
+.mission-visual-dot {
+  position: absolute; width: 44px; height: 44px; border-radius: 50%;
+  background: var(--golden); display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; top: 0; left: 50%; transform: translateX(-50%) translateY(-50%);
+  box-shadow: var(--shadow-md);
+}
+.mission-content .section-label { display: block; }
+.mission-content .section-title { text-align: left; }
+.mission-content p {
+  color: var(--text-muted); line-height: 1.85; margin-bottom: 20px;
+}
+.mission-pillars {
+  display: flex; flex-direction: column; gap: 16px; margin-top: 32px;
+}
+.mission-pillar {
+  display: flex; align-items: flex-start; gap: 16px;
+  padding: 18px 20px; border-radius: var(--radius);
+  background: var(--soft-accent2); border: 1px solid var(--border);
+  opacity: 0; transform: translateX(30px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.mission-pillar.visible { opacity: 1; transform: translateX(0); }
+.mission-pillar:nth-child(2) { transition-delay: 0.12s; }
+.mission-pillar:nth-child(3) { transition-delay: 0.24s; }
+.mission-pillar-icon {
+  width: 40px; height: 40px; border-radius: var(--radius-sm);
+  background: var(--blush); color: var(--blush-dark);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem; flex-shrink: 0;
+}
+.mission-pillar-text h4 {
+  font-weight: 700; color: var(--primary); margin-bottom: 4px; font-size: 0.95rem;
+}
+.mission-pillar-text p {
+  font-size: 0.88rem; color: var(--text-muted); margin: 0; line-height: 1.6;
+}
+
+/* ── Values ─────────────────────────────────── */
+.values-section {
+  padding: 80px 0 100px;
+  background: var(--soft-accent2);
+}
+.values-section .section-label { display: block; text-align: center; }
+.values-section .section-title { text-align: center; margin-bottom: 56px; }
+.values-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px;
+  max-width: 1000px; margin: 0 auto; padding: 0 24px;
+}
+.value-card {
+  background: var(--surface); border-radius: var(--radius-lg);
+  padding: 36px 28px; text-align: center;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  opacity: 0; transform: translateY(36px);
+  transition: opacity 0.6s ease, transform 0.6s ease, box-shadow 0.3s ease;
+}
+.value-card.visible { opacity: 1; transform: translateY(0); }
+.value-card:nth-child(2) { transition-delay: 0.12s; }
+.value-card:nth-child(3) { transition-delay: 0.24s; }
+.value-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-4px); }
+.value-card-emoji { font-size: 2.8rem; margin-bottom: 18px; display: block; }
+.value-card h3 {
+  font-family: var(--font-display); font-size: 1.25rem; font-weight: 700;
+  color: var(--primary); margin-bottom: 12px;
+}
+.value-card p {
+  font-size: 0.93rem; color: var(--text-muted); line-height: 1.75;
+}
+
+/* ── CTA ────────────────────────────────────── */
+.about-cta {
+  padding: 100px 0;
+  background: var(--surface);
+  text-align: center;
+}
+.about-cta .section-label { display: block; }
+.about-cta .section-title { margin-bottom: 16px; }
+.about-cta-sub {
+  font-size: 1.05rem; color: var(--text-muted); max-width: 500px;
+  margin: 0 auto 44px; line-height: 1.75;
+}
+.about-cta-buttons { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+
+/* ── Responsive ─────────────────────────────── */
+@media (max-width: 900px) {
+  .about-hero-container { grid-template-columns: 1fr; gap: 48px; padding: 80px 24px 60px; }
+  .about-hero-visual { display: none; }
+  .timeline::before { left: 28px; }
+  .timeline-item { grid-template-columns: 60px 1fr; }
+  .timeline-item:nth-child(odd) .timeline-content,
+  .timeline-item:nth-child(even) .timeline-content {
+    grid-column: 2; text-align: left; padding-left: 20px; padding-right: 0;
+  }
+  .timeline-item:nth-child(odd) .timeline-dot,
+  .timeline-item:nth-child(even) .timeline-dot { grid-column: 1; }
+  .timeline-item:nth-child(odd) .timeline-empty,
+  .timeline-item:nth-child(even) .timeline-empty { display: none; }
+  .about-stats-grid { grid-template-columns: repeat(2, 1fr); gap: 32px; }
+  .mission-grid { grid-template-columns: 1fr; gap: 48px; }
+  .mission-visual { display: none; }
+  .values-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 540px) {
+  .about-stats-grid { grid-template-columns: repeat(2, 1fr); gap: 24px; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- ── Hero ─────────────────────────────── -->
+<section class="about-hero">
+  <div class="about-hero-bg"></div>
+  <div class="about-hero-leaves" aria-hidden="true">
+    <i class="fas fa-leaf about-hero-leaf"></i>
+    <i class="fas fa-spa about-hero-leaf"></i>
+    <i class="fas fa-seedling about-hero-leaf"></i>
+    <i class="fas fa-leaf about-hero-leaf"></i>
+    <i class="fas fa-spa about-hero-leaf"></i>
+  </div>
+
+  <div class="about-hero-container">
+    <div class="about-hero-text">
+      <div class="about-hero-eyebrow">
+        <i class="fas fa-seedling"></i> The origin story
+      </div>
+      <h1 class="about-hero-title">
+        Born from<br><em>Dead Plants</em><br>& Hard Lessons
+      </h1>
+      <p class="about-hero-subtitle">
+        I bought plants because they looked beautiful. Then they started dying — one by one.
+        Not from neglect, but from not knowing. That gap between love and knowledge
+        is exactly why PlantCare exists.
+      </p>
+      <a href="#journey" class="about-hero-scroll">
+        <i class="fas fa-chevron-down"></i> Read my story
+      </a>
+    </div>
+
+    <div class="about-hero-visual" aria-hidden="true">
+      <div class="hero-visual-orb hero-visual-orb--1"></div>
+      <div class="hero-visual-orb hero-visual-orb--2"></div>
+
+      <div class="hero-visual-card hero-visual-card--main">
+        <div class="hero-visual-card-inner">
+          <div class="hero-visual-card-icon">🌿</div>
+          <div>
+            <div class="hero-visual-card-label">First plant</div>
+            <div class="hero-visual-card-value">Pothos</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-visual-card hero-visual-card--side">
+        <div class="hero-visual-card-inner">
+          <div class="hero-visual-card-icon">💀</div>
+          <div>
+            <div class="hero-visual-card-label">Fate</div>
+            <div class="hero-visual-card-value">Overwatered</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-visual-card hero-visual-card--accent">
+        <span style="font-size:2.8rem;">🌱</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Quote ─────────────────────────────── -->
+<section class="about-quote-section" id="journey">
+  <div class="container">
+    <blockquote class="about-quote">
+      "Every dead plant was a chapter I hadn't read yet. So I decided to write the book myself."
+    </blockquote>
+    <p class="about-quote-attr">— Sanjoli, Founder of PlantCare</p>
+  </div>
+</section>
+
+<!-- ── Timeline ──────────────────────────── -->
+<section class="journey-section">
+  <div class="container">
+    <span class="section-label"><i class="fas fa-route"></i> The journey</span>
+    <h2 class="section-title">How PlantCare<br>Came to Life</h2>
+
+    <div class="timeline">
+
+      <div class="timeline-item">
+        <div class="timeline-content">
+          <span class="timeline-tag">The Beginning</span>
+          <span class="timeline-emoji">🛒</span>
+          <h3>I fell in love with plants</h3>
+          <p>Walking through a nursery one afternoon, I bought my first three plants on impulse — a Pothos, a Peace Lily, and a little succulent. They looked effortless. I thought plants were just… decorations that stayed alive on their own.</p>
+        </div>
+        <div class="timeline-dot">
+          <div class="timeline-dot-inner"><i class="fas fa-seedling"></i></div>
+        </div>
+        <div class="timeline-empty"></div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-empty"></div>
+        <div class="timeline-dot">
+          <div class="timeline-dot-inner"><i class="fas fa-tint"></i></div>
+        </div>
+        <div class="timeline-content">
+          <span class="timeline-tag">The Wake-Up Call</span>
+          <span class="timeline-emoji">😟</span>
+          <h3>They started dying</h3>
+          <p>Within two months, the Peace Lily had yellow leaves. The succulent turned to mush. The Pothos started wilting. I was devastated. I was watering them daily — out of love — not knowing I was literally drowning them. Nobody had warned me.</p>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-content">
+          <span class="timeline-tag">The Search</span>
+          <span class="timeline-emoji">🔍</span>
+          <h3>The internet only confused me more</h3>
+          <p>I searched endlessly — "why is my Pothos dying", "how often should I water a succulent". Every answer was buried under ads, contradictions, and forum arguments. There was no single, clear, trustworthy place I could just go and learn.</p>
+        </div>
+        <div class="timeline-dot">
+          <div class="timeline-dot-inner"><i class="fas fa-search"></i></div>
+        </div>
+        <div class="timeline-empty"></div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-empty"></div>
+        <div class="timeline-dot">
+          <div class="timeline-dot-inner"><i class="fas fa-lightbulb"></i></div>
+        </div>
+        <div class="timeline-content">
+          <span class="timeline-tag">The Idea</span>
+          <span class="timeline-emoji">💡</span>
+          <h3>What if I built the thing I needed?</h3>
+          <p>After losing my fifth plant, something shifted. Instead of feeling defeated, I felt determined. I wanted one place — clean, honest, and human — with real care guides, easy search, and even AI to help diagnose what's wrong. PlantCare was born.</p>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-content">
+          <span class="timeline-tag">The Build</span>
+          <span class="timeline-emoji">⌨️</span>
+          <h3>I coded it, one plant at a time</h3>
+          <p>I learned as I went — researching every plant I added, cross-checking with botanists and growers, writing care instructions I wish I'd had from day one. The Analyze feature came from one frustrating afternoon of not knowing what was wrong with a leaf.</p>
+        </div>
+        <div class="timeline-dot">
+          <div class="timeline-dot-inner"><i class="fas fa-code"></i></div>
+        </div>
+        <div class="timeline-empty"></div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-empty"></div>
+        <div class="timeline-dot">
+          <div class="timeline-dot-inner" style="background: var(--blush-accent);"><i class="fas fa-heart"></i></div>
+        </div>
+        <div class="timeline-content">
+          <span class="timeline-tag">Today</span>
+          <span class="timeline-emoji">🌿</span>
+          <h3>All my plants are thriving</h3>
+          <p>And so is PlantCare. What started as a personal project is now a growing community of plant parents who deserve better than guesswork. If you're reading this, you're already one of us. Welcome.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── Stats ─────────────────────────────── -->
+<section class="about-stats-section">
+  <div class="about-stats-grid">
+    <div class="about-stat">
+      <div class="about-stat-icon"><i class="fas fa-leaf"></i></div>
+      <div class="about-stat-number" data-count="40">0</div>
+      <div class="about-stat-label">Plants catalogued</div>
+    </div>
+    <div class="about-stat">
+      <div class="about-stat-icon"><i class="fas fa-paw"></i></div>
+      <div class="about-stat-number" data-count="13">0</div>
+      <div class="about-stat-label">Pet-safe varieties</div>
+    </div>
+    <div class="about-stat">
+      <div class="about-stat-icon"><i class="fas fa-wind"></i></div>
+      <div class="about-stat-number" data-count="21">0</div>
+      <div class="about-stat-label">Air-purifying picks</div>
+    </div>
+    <div class="about-stat">
+      <div class="about-stat-icon"><i class="fas fa-skull-crossbones"></i></div>
+      <div class="about-stat-number" data-count="5">0</div>
+      <div class="about-stat-label">Plants lost to learn this</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Mission ───────────────────────────── -->
+<section class="mission-section">
+  <div class="mission-grid">
+    <div class="mission-visual" aria-hidden="true">
+      <div class="mission-visual-ring">
+        <div class="mission-visual-dot"><i class="fas fa-star"></i></div>
+        <div class="mission-visual-ring-inner">
+          <span class="mission-visual-icon">🌿</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="mission-content">
+      <span class="section-label"><i class="fas fa-bullseye"></i> Our mission</span>
+      <h2 class="section-title">No plant parent<br>left behind</h2>
+      <p>PlantCare exists to make plant knowledge accessible, honest, and actually useful. Not buried in forums. Not hidden behind paywalls. Just clear, well-researched guidance for anyone who's ever looked at a yellowing leaf and had no idea what to do.</p>
+      <p>We believe the problem was never the plant. It was the missing information.</p>
+
+      <div class="mission-pillars">
+        <div class="mission-pillar">
+          <div class="mission-pillar-icon"><i class="fas fa-book-open"></i></div>
+          <div class="mission-pillar-text">
+            <h4>Clear, honest care guides</h4>
+            <p>No jargon. No conflicting advice. Just what you actually need to know.</p>
+          </div>
+        </div>
+        <div class="mission-pillar">
+          <div class="mission-pillar-icon"><i class="fas fa-camera"></i></div>
+          <div class="mission-pillar-text">
+            <h4>AI-powered plant analysis</h4>
+            <p>Upload a photo, get a diagnosis. Because every leaf has a story.</p>
+          </div>
+        </div>
+        <div class="mission-pillar">
+          <div class="mission-pillar-icon"><i class="fas fa-users"></i></div>
+          <div class="mission-pillar-text">
+            <h4>Built for plant beginners</h4>
+            <p>If I could figure it out after killing five plants, so can you.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Values ───────────────────────────── -->
+<section class="values-section">
+  <div class="container">
+    <span class="section-label"><i class="fas fa-heart"></i> What we stand for</span>
+    <h2 class="section-title">Our Values</h2>
+
+    <div class="values-grid">
+      <div class="value-card">
+        <span class="value-card-emoji">🌱</span>
+        <h3>Growth Through Failure</h3>
+        <p>Every dead plant is a lesson. We celebrate the learning curve, not just the lush windowsill photo.</p>
+      </div>
+      <div class="value-card">
+        <span class="value-card-emoji">🔬</span>
+        <h3>Information, Not Overwhelm</h3>
+        <p>We distill complex plant science into plain English — exactly what you need, nothing you don't.</p>
+      </div>
+      <div class="value-card">
+        <span class="value-card-emoji">🤝</span>
+        <h3>Community First</h3>
+        <p>PlantCare grows because plant lovers share. Every guide, tip, and feature is made for the community.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA ───────────────────────────────── -->
+<section class="about-cta">
+  <div class="container">
+    <span class="section-label"><i class="fas fa-leaf"></i> Start your journey</span>
+    <h2 class="section-title">Ready to keep your<br>plants alive?</h2>
+    <p class="about-cta-sub">Explore our plant database, use the AI analyzer, or just browse — no dead plants required.</p>
+    <div class="about-cta-buttons">
+      <a href="{% url 'plant_list' %}" class="btn btn-primary btn-large">
+        <i class="fas fa-leaf"></i> Browse Plants
+      </a>
+      <a href="{% url 'analyze' %}" class="btn btn-secondary btn-large">
+        <i class="fas fa-camera"></i> Analyze a Plant
+      </a>
+      <a href="{% url 'blog_list' %}" class="btn btn-outline btn-large" style="border-color: var(--border); color: var(--primary);">
+        <i class="fas fa-book"></i> Read the Blog
+      </a>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+(function () {
+  // ── Intersection Observer for scroll animations ──
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+
+  document.querySelectorAll(
+    '.timeline-item, .about-stat, .mission-pillar, .value-card'
+  ).forEach(el => observer.observe(el));
+
+  // ── Animated counters ──
+  const counterObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      const el = entry.target;
+      const target = parseInt(el.dataset.count, 10);
+      const duration = 1400;
+      const start = performance.now();
+      const update = (now) => {
+        const elapsed = now - start;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        el.textContent = Math.round(eased * target) + (target === 40 ? '+' : '');
+        if (progress < 1) requestAnimationFrame(update);
+      };
+      requestAnimationFrame(update);
+      counterObserver.unobserve(el);
+    });
+  }, { threshold: 0.5 });
+
+  document.querySelectorAll('.about-stat-number[data-count]').forEach(el => {
+    counterObserver.observe(el);
+  });
+})();
+</script>
+{% endblock %}

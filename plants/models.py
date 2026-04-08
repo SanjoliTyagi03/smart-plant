@@ -68,3 +68,24 @@ class Plant(models.Model):
 
     def get_absolute_url(self):
         return reverse('plant_detail', kwargs={'pk': self.pk})
+
+
+class BlogPost(models.Model):
+    title = models.CharField(max_length=300)
+    excerpt = models.TextField(blank=True, help_text="Short summary shown on the blog listing page")
+    content = models.TextField()
+    image = models.ImageField(upload_to="blogs/", blank=True, null=True)
+    image_url = models.URLField(max_length=500, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return self.title
+
+    def get_image_url(self):
+        if self.image:
+            return self.image.url
+        return self.image_url

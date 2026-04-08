@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Plant
+from .models import BlogPost, Plant
 
 
 @admin.register(Plant)
@@ -31,3 +31,23 @@ class PlantAdmin(admin.ModelAdmin):
     
     def get_queryset(self, request):
         return super().get_queryset(request).select_related()
+
+
+@admin.register(BlogPost)
+class BlogPostAdmin(admin.ModelAdmin):
+    list_display = ['title', 'created_at', 'updated_at']
+    search_fields = ['title', 'excerpt', 'content']
+    readonly_fields = ['created_at', 'updated_at']
+
+    fieldsets = (
+        ('Content', {
+            'fields': ('title', 'excerpt', 'content')
+        }),
+        ('Image', {
+            'fields': ('image', 'image_url')
+        }),
+        ('Meta', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )

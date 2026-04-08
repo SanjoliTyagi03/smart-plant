@@ -1,0 +1,298 @@
+{% extends 'plants/base.html' %}
+{% load static %}
+
+{% block title %}Blog — Plant Stories & Care Tips | PlantCare{% endblock %}
+{% block meta_description %}Real stories, care guides, and plant wisdom from someone who killed five plants before getting it right.{% endblock %}
+
+{% block extra_head %}
+<style>
+/* ── Blog list page ────────────────────── */
+
+.blog-hero {
+  background: var(--primary);
+  padding: 80px 0 60px;
+  position: relative; overflow: hidden;
+  text-align: center;
+}
+.blog-hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 60% 80% at 20% 50%, rgba(58,122,58,0.3) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 70% at 80% 50%, rgba(215,206,147,0.15) 0%, transparent 60%);
+  pointer-events: none;
+}
+.blog-hero-content { position: relative; z-index: 1; }
+.blog-hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--golden); margin-bottom: 20px;
+}
+.blog-hero h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 5vw, 3.8rem);
+  font-weight: 700; color: #fff; line-height: 1.15; margin-bottom: 20px;
+}
+.blog-hero h1 em { color: var(--golden); font-style: italic; }
+.blog-hero-sub {
+  font-size: 1.05rem; color: rgba(255,255,255,0.7);
+  max-width: 520px; margin: 0 auto; line-height: 1.75;
+}
+
+/* ── Blog Grid ──────────────────────────── */
+.blog-section {
+  padding: 72px 0 100px;
+  background: var(--base);
+}
+.blog-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+  margin-bottom: 56px;
+}
+.blog-card {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  display: flex; flex-direction: column;
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+  opacity: 0; transform: translateY(28px);
+}
+.blog-card.visible { opacity: 1; transform: translateY(0); }
+.blog-card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-5px);
+}
+
+.blog-card-img {
+  aspect-ratio: 16 / 9; overflow: hidden; position: relative;
+  background: var(--blush);
+}
+.blog-card-img img {
+  width: 100%; height: 100%; object-fit: cover;
+  transition: transform 0.5s ease;
+}
+.blog-card:hover .blog-card-img img { transform: scale(1.06); }
+.blog-card-img-placeholder {
+  width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+  font-size: 3.5rem; background: linear-gradient(135deg, var(--blush) 0%, var(--soft-accent) 100%);
+}
+
+.blog-card-body {
+  padding: 24px 24px 20px; flex: 1; display: flex; flex-direction: column;
+}
+.blog-card-date {
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--text-light); margin-bottom: 10px;
+  display: flex; align-items: center; gap: 6px;
+}
+.blog-card-title {
+  font-family: var(--font-display); font-size: 1.2rem; font-weight: 700;
+  color: var(--primary); line-height: 1.35; margin-bottom: 12px;
+  flex: 1;
+}
+.blog-card-excerpt {
+  font-size: 0.9rem; color: var(--text-muted); line-height: 1.7;
+  margin-bottom: 20px; flex: 1;
+}
+.blog-card-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-top: 16px; border-top: 1px solid var(--border);
+}
+.blog-card-author {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 0.82rem; font-weight: 600; color: var(--text-muted);
+}
+.blog-card-author-avatar {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--primary); color: var(--golden);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.7rem; font-weight: 700;
+}
+.blog-card-read {
+  font-size: 0.82rem; font-weight: 600;
+  color: var(--blush-accent); display: flex; align-items: center; gap: 5px;
+  transition: gap 0.2s ease;
+}
+.blog-card:hover .blog-card-read { gap: 9px; }
+
+/* ── Featured (first card) ────────────── */
+.blog-card--featured {
+  grid-column: 1 / -1;
+  display: grid; grid-template-columns: 1.4fr 1fr;
+  border-radius: var(--radius-xl);
+}
+.blog-card--featured .blog-card-img {
+  aspect-ratio: unset; min-height: 360px; border-radius: 0;
+}
+.blog-card--featured .blog-card-body {
+  padding: 44px 40px;
+}
+.blog-card--featured .blog-card-title {
+  font-size: clamp(1.4rem, 2.5vw, 2rem); margin-bottom: 16px;
+}
+.blog-card--featured .blog-card-excerpt {
+  font-size: 1rem; line-height: 1.8;
+}
+.blog-card--featured .blog-card-date { margin-bottom: 14px; }
+
+/* ── Empty state ───────────────────────── */
+.blog-empty {
+  text-align: center; padding: 80px 24px;
+  grid-column: 1 / -1;
+}
+.blog-empty-icon { font-size: 5rem; margin-bottom: 24px; display: block; opacity: 0.5; }
+.blog-empty h3 {
+  font-family: var(--font-display); font-size: 1.8rem; color: var(--primary);
+  margin-bottom: 12px;
+}
+.blog-empty p { color: var(--text-muted); font-size: 1rem; line-height: 1.7; max-width: 400px; margin: 0 auto 32px; }
+
+/* ── Pagination ─────────────────────────── */
+.pagination {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  flex-wrap: wrap;
+}
+.pagination-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 42px; height: 42px; border-radius: var(--radius-sm);
+  font-size: 0.9rem; font-weight: 600; color: var(--text-muted);
+  border: 1px solid var(--border); background: var(--surface);
+  transition: var(--transition); text-decoration: none;
+}
+.pagination-btn:hover { background: var(--blush); border-color: var(--blush-accent); color: var(--primary); }
+.pagination-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+.pagination-btn.disabled { opacity: 0.35; pointer-events: none; }
+.pagination-ellipsis { color: var(--text-muted); padding: 0 4px; }
+
+/* ── Responsive ─────────────────────────── */
+@media (max-width: 1000px) {
+  .blog-card--featured {
+    grid-template-columns: 1fr;
+  }
+  .blog-card--featured .blog-card-img { min-height: 240px; aspect-ratio: 16/9; }
+  .blog-card--featured .blog-card-body { padding: 28px 24px; }
+}
+@media (max-width: 760px) {
+  .blog-grid { grid-template-columns: 1fr; }
+  .blog-card--featured { grid-column: auto; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<section class="blog-hero">
+  <div class="container blog-hero-content">
+    <div class="blog-hero-eyebrow"><i class="fas fa-book-open"></i> Stories & guides</div>
+    <h1>The PlantCare <em>Blog</em></h1>
+    <p class="blog-hero-sub">Honest stories, practical care tips, and everything I learned from watching plants die so you don't have to.</p>
+  </div>
+</section>
+
+<section class="blog-section">
+  <div class="container">
+
+    {% if blogs.object_list %}
+    <div class="blog-grid">
+      {% for post in blogs.object_list %}
+      <article class="blog-card {% if forloop.first %}blog-card--featured{% endif %}" style="transition-delay: {{ forloop.counter0 }}00ms">
+        <div class="blog-card-img">
+          {% if post.get_image_url %}
+            <img src="{{ post.get_image_url }}" alt="{{ post.title }}" loading="lazy">
+          {% else %}
+            <div class="blog-card-img-placeholder">🌿</div>
+          {% endif %}
+        </div>
+        <div class="blog-card-body">
+          <div class="blog-card-date">
+            <i class="fas fa-calendar-alt"></i>
+            {{ post.created_at|date:"F j, Y" }}
+          </div>
+          <h2 class="blog-card-title">
+            <a href="{% url 'blog_detail' post.pk %}" style="color:inherit;">{{ post.title }}</a>
+          </h2>
+          <p class="blog-card-excerpt">
+            {% if post.excerpt %}
+              {{ post.excerpt|truncatewords:28 }}
+            {% else %}
+              {{ post.content|truncatewords:28 }}
+            {% endif %}
+          </p>
+          <div class="blog-card-footer">
+            <div class="blog-card-author">
+              <div class="blog-card-author-avatar">SJ</div>
+              Sanjoli
+            </div>
+            <a href="{% url 'blog_detail' post.pk %}" class="blog-card-read">
+              Read more <i class="fas fa-arrow-right"></i>
+            </a>
+          </div>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+
+    {% if blogs.has_other_pages %}
+    <nav class="pagination" aria-label="Blog pagination">
+      {% if blogs.has_previous %}
+        <a href="?page={{ blogs.previous_page_number }}" class="pagination-btn" aria-label="Previous">
+          <i class="fas fa-chevron-left"></i>
+        </a>
+      {% else %}
+        <span class="pagination-btn disabled"><i class="fas fa-chevron-left"></i></span>
+      {% endif %}
+
+      {% for num in blogs.paginator.page_range %}
+        {% if blogs.number == num %}
+          <span class="pagination-btn active">{{ num }}</span>
+        {% elif num > blogs.number|add:'-3' and num < blogs.number|add:'3' %}
+          <a href="?page={{ num }}" class="pagination-btn">{{ num }}</a>
+        {% endif %}
+      {% endfor %}
+
+      {% if blogs.has_next %}
+        <a href="?page={{ blogs.next_page_number }}" class="pagination-btn" aria-label="Next">
+          <i class="fas fa-chevron-right"></i>
+        </a>
+      {% else %}
+        <span class="pagination-btn disabled"><i class="fas fa-chevron-right"></i></span>
+      {% endif %}
+    </nav>
+    {% endif %}
+
+    {% else %}
+    <div class="blog-grid">
+      <div class="blog-empty">
+        <span class="blog-empty-icon">🌱</span>
+        <h3>Stories are growing...</h3>
+        <p>The blog is still being tended to. New posts are on their way — come back soon for plant stories, care tips, and everything in between.</p>
+        <a href="{% url 'plant_list' %}" class="btn btn-primary">
+          <i class="fas fa-leaf"></i> Browse Plants Instead
+        </a>
+      </div>
+    </div>
+    {% endif %}
+
+  </div>
+</section>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+(function () {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.blog-card').forEach(el => observer.observe(el));
+})();
+</script>
+{% endblock %}

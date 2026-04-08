@@ -68,6 +68,12 @@
                 <li role="none">
                     <a href="{% url 'analyze' %}" class="nav-link {% if request.resolver_match.url_name == 'analyze' %}active{% endif %}" role="menuitem">Analyze</a>
                 </li>
+                <li role="none">
+                    <a href="{% url 'blog_list' %}" class="nav-link {% if request.resolver_match.url_name == 'blog_list' or request.resolver_match.url_name == 'blog_detail' %}active{% endif %}" role="menuitem">Blog</a>
+                </li>
+                <li role="none">
+                    <a href="{% url 'about' %}" class="nav-link {% if request.resolver_match.url_name == 'about' %}active{% endif %}" role="menuitem">About</a>
+                </li>
             </ul>
             <div class="nav-auth">
                 {% if user.is_authenticated %}
@@ -94,6 +100,8 @@
         <a href="{% url 'home' %}" class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">Home</a>
         <a href="{% url 'plant_list' %}" class="nav-link {% if request.resolver_match.url_name == 'plant_list' or request.resolver_match.url_name == 'plant_detail' %}active{% endif %}">Plants</a>
         <a href="{% url 'analyze' %}" class="nav-link {% if request.resolver_match.url_name == 'analyze' %}active{% endif %}">Analyze</a>
+        <a href="{% url 'blog_list' %}" class="nav-link {% if request.resolver_match.url_name == 'blog_list' or request.resolver_match.url_name == 'blog_detail' %}active{% endif %}">Blog</a>
+        <a href="{% url 'about' %}" class="nav-link {% if request.resolver_match.url_name == 'about' %}active{% endif %}">About</a>
         {% if user.is_authenticated %}
             <span class="nav-link" style="opacity:0.6;cursor:default;"><i class="fas fa-user-circle"></i> {{ user.username }}</span>
             <form method="post" action="{% url 'logout' %}">
