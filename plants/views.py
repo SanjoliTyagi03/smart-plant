@@ -111,10 +111,20 @@ def plant_list(request):
     air_purifying = request.GET.get('air_purifying')
     if air_purifying == 'true':
         plants = plants.filter(air_purifying=True)
-    
+
+    # Filter by indoor
+    indoor = request.GET.get('indoor')
+    if indoor == 'true':
+        plants = plants.filter(is_indoor=True)
+
+    # Filter by herbal
+    herbal = request.GET.get('herbal')
+    if herbal == 'true':
+        plants = plants.filter(is_herbal=True)
+
     # Clean search query for display
     display_search_query = search_query if search_query and search_query.lower() != 'none' else ''
-    
+
     context = {
         'plants': plants,
         'search_query': display_search_query,
@@ -122,6 +132,8 @@ def plant_list(request):
         'selected_light': light,
         'selected_pet_safe': pet_safe,
         'selected_air_purifying': air_purifying,
+        'selected_indoor': indoor,
+        'selected_herbal': herbal,
         'difficulty_choices': Plant.DIFFICULTY_CHOICES,
         'light_choices': Plant.LIGHT_CHOICES,
     }

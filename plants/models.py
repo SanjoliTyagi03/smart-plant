@@ -48,6 +48,8 @@ class Plant(models.Model):
     growth_rate = models.CharField(max_length=50, default='Medium')
     pet_safe = models.BooleanField(default=False)
     air_purifying = models.BooleanField(default=False)
+    is_indoor = models.BooleanField(default=False, help_text="Suitable for indoor growing")
+    is_herbal = models.BooleanField(default=False, help_text="Herb / medicinal plant")
     
     # Meta information
     created_at = models.DateTimeField(auto_now_add=True)

@@ -458,6 +458,8 @@ main { margin-top: var(--nav-h); min-height: calc(100vh - var(--nav-h)); }
 }
 .badge-pet-safe    { background: rgba(239,235,206,0.92); color: var(--primary); }
 .badge-air-purifying { background: rgba(215,206,147,0.35); color: #6B6840; }
+.badge-indoor      { background: rgba(220,240,220,0.95); color: var(--blush-dark); }
+.badge-herbal      { background: rgba(163,163,128,0.22); color: var(--accent-hover); }
 .badge-featured    { background: rgba(242,221,212,0.95); color: var(--blush-dark); }
 
 .plant-info { padding: 20px 22px 22px; flex: 1; display: flex; flex-direction: column; }
