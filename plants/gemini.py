@@ -40,3 +40,4 @@ def analyze_plant_image(image_bytes: bytes, mime_type: str) -> dict:
         return {"error": "Could not parse plant analysis. Please try a clearer image."}
     except Exception as e:
         return {"error": f"Analysis failed: {str(e)}"}
+  
