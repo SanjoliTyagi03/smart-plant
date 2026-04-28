@@ -7,7 +7,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django import forms
-from .models import BlogPost, Plant
+from .models import BlogPost, Plant, PlantAnalysis
 from .gemini import analyze_plant_image
 
 
@@ -151,9 +151,9 @@ def plant_detail(request, pk):
 
 @login_required
 def analyze(request):
-    """Plant analyzer page — upload image, get Gemini health/care report"""
     result = None
     error = None
+    saved_pk = None
 
     if request.method == 'POST':
         image_file = request.FILES.get('image')
@@ -166,8 +166,44 @@ def analyze(request):
             if 'error' in result:
                 error = result['error']
                 result = None
+            else:
+                image_file.seek(0)
+                raw_score = result.get('severity_score', 5)
+                try:
+                    severity_score = max(1, min(10, int(raw_score)))
+                except (TypeError, ValueError):
+                    severity_score = 5
+                analysis = PlantAnalysis.objects.create(
+                    user=request.user,
+                    plant_name=result.get('plant_name', 'Unknown'),
+                    scientific_name=result.get('scientific_name', ''),
+                    health_status=result.get('health_status', 'Unknown'),
+                    severity_score=severity_score,
+                    current_condition=result.get('current_condition', ''),
+                    care_plan=result.get('care_plan', {}),
+                    cure_plan=result.get('cure_plan') or '',
+                    common_problems=result.get('common_problems', ''),
+                )
+                analysis.image.save(image_file.name, image_file, save=True)
+                saved_pk = analysis.pk
 
-    return render(request, 'plants/analyze.html', {'result': result, 'error': error})
+    analyses = PlantAnalysis.objects.filter(user=request.user)
+    paginator = Paginator(analyses, 6)
+    history_page = paginator.get_page(request.GET.get('page'))
+
+    return render(request, 'plants/analyze.html', {
+        'result': result,
+        'error': error,
+        'saved_pk': saved_pk,
+        'history_page': history_page,
+    })
+
+
+
+@login_required
+def analysis_detail(request, pk):
+    analysis = get_object_or_404(PlantAnalysis, pk=pk, user=request.user)
+    return render(request, 'plants/analysis_detail.html', {'analysis': analysis})
 
 
 def about(request):

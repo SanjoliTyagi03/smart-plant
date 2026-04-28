@@ -1,0 +1,338 @@
+{% extends 'plants/base.html' %}
+{% load static %}
+
+{% block title %}{{ analysis.plant_name }} — PlantCare{% endblock %}
+
+{% block extra_head %}
+<style>
+  /* ── Hero ── */
+  .detail-hero {
+    padding: 60px 0 52px;
+    background: linear-gradient(135deg, #0e2010 0%, var(--primary-mid) 60%, var(--primary) 100%);
+    transition: background 0.4s ease;
+  }
+  /* severity-tinted hero gradients */
+  .detail-hero.sev-great    { background: linear-gradient(135deg, #082010 0%, #144d1c 55%, #1d6625 100%); }
+  .detail-hero.sev-good     { background: linear-gradient(135deg, #162008 0%, #2e4a0e 55%, #3d6214 100%); }
+  .detail-hero.sev-moderate { background: linear-gradient(135deg, #241800 0%, #4a360a 55%, #6a5014 100%); }
+  .detail-hero.sev-bad      { background: linear-gradient(135deg, #2a1000 0%, #5a2808 55%, #7a3c10 100%); }
+  .detail-hero.sev-critical { background: linear-gradient(135deg, #2a0808 0%, #5a1010 55%, #7a1c1c 100%); }
+  .detail-hero-inner {
+    display: flex; align-items: center; gap: 36px; flex-wrap: wrap;
+  }
+  .detail-hero-img {
+    width: 156px; height: 156px; border-radius: 20px;
+    object-fit: cover; flex-shrink: 0;
+    border: 3px solid rgba(255,255,255,0.15);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.35);
+  }
+  .detail-hero-img-placeholder {
+    width: 156px; height: 156px; border-radius: 20px;
+    background: rgba(255,255,255,0.07);
+    border: 2px dashed rgba(255,255,255,0.2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2.8rem; color: rgba(255,255,255,0.3);
+    flex-shrink: 0;
+  }
+  .detail-hero-text h1 {
+    font-family: var(--font-display);
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    color: #fff; line-height: 1.2; margin-bottom: 5px;
+  }
+  .detail-hero-sci {
+    color: rgba(255,255,255,0.55); font-style: italic;
+    font-size: 0.98rem; margin-bottom: 18px;
+  }
+  .detail-hero-meta { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .detail-date {
+    font-size: 0.8rem; color: rgba(255,255,255,0.5);
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  /* ── Severity badge (on dark hero) ── */
+  .severity-wrap {
+    display: flex; align-items: center; gap: 10px; margin-top: 14px;
+  }
+  .severity-label {
+    font-size: 0.68rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.12em; color: rgba(255,255,255,0.45); white-space: nowrap;
+  }
+  .severity-bar {
+    width: 120px; height: 7px;
+    background: rgba(255,255,255,0.12); border-radius: 99px; overflow: hidden;
+  }
+  .severity-fill {
+    height: 100%; border-radius: 99px; transition: width 0.6s ease;
+  }
+  .severity-fill.s1,.severity-fill.s2  { background: #6fcf6f; }
+  .severity-fill.s3,.severity-fill.s4  { background: #a8cf5f; }
+  .severity-fill.s5,.severity-fill.s6  { background: var(--golden); }
+  .severity-fill.s7,.severity-fill.s8  { background: #e0923a; }
+  .severity-fill.s9,.severity-fill.s10 { background: #e06060; }
+  .severity-score-num {
+    font-size: 0.78rem; font-weight: 800; color: rgba(255,255,255,0.75);
+  }
+
+  /* ── Health pill — on dark hero ── */
+  .health-pill {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 5px 14px; border-radius: 99px;
+    font-size: 0.82rem; font-weight: 700;
+  }
+  .health-pill .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .health-pill.healthy  { background: rgba(107,139,94,0.3);  color: #b6e2a8; border: 1px solid rgba(107,139,94,0.5); }
+  .health-pill.healthy .dot  { background: #7ecf6f; box-shadow: 0 0 5px #7ecf6f; }
+  .health-pill.stressed { background: rgba(215,206,147,0.2); color: #ede499; border: 1px solid rgba(215,206,147,0.4); }
+  .health-pill.stressed .dot { background: var(--golden); box-shadow: 0 0 5px var(--golden); }
+  .health-pill.diseased { background: rgba(184,92,92,0.25);  color: #f4b8b8; border: 1px solid rgba(184,92,92,0.4); }
+  .health-pill.diseased .dot { background: #e07878; box-shadow: 0 0 5px #e07878; }
+  .health-pill.unknown  { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.55); border: 1px solid rgba(255,255,255,0.18); }
+  .health-pill.unknown .dot  { background: rgba(255,255,255,0.4); }
+
+  /* ── Body ── */
+  .detail-body { padding: 48px 0 80px; background: var(--base); }
+  .analysis-analysis-detail-layout { max-width: 860px; margin: 0 auto; }
+
+  /* ── Back bar ── */
+  .back-bar { display: flex; gap: 10px; margin-bottom: 36px; flex-wrap: wrap; }
+  .btn-back {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 9px 20px; border-radius: var(--radius-full);
+    border: 1.5px solid var(--border); color: var(--text-muted);
+    font-size: 0.86rem; font-weight: 600;
+    background: var(--surface); transition: var(--transition);
+    text-decoration: none;
+  }
+  .btn-back:hover { border-color: var(--accent); color: var(--primary); background: var(--soft-accent); }
+
+  /* ── Cards ── */
+  .result-card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 20px;
+    padding: 28px 32px;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 20px;
+  }
+  .result-card--cure {
+    border-color: rgba(196,136,74,0.45);
+    background: rgba(196,136,74,0.06);
+  }
+  .rc-header {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 18px; padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .rc-icon {
+    width: 36px; height: 36px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.88rem; flex-shrink: 0;
+  }
+  .rc-icon--green  { background: var(--soft-accent); color: var(--primary); }
+  .rc-icon--olive  { background: rgba(163,163,128,0.2); color: var(--accent-hover); }
+  .rc-icon--amber  { background: rgba(196,136,74,0.15); color: var(--warning); }
+  .rc-header h3 {
+    font-size: 0.85rem; font-weight: 700;
+    color: var(--primary); text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  .result-card p { color: var(--text-muted); line-height: 1.8; font-size: 0.94rem; }
+
+  /* ── Care rows ── */
+  .care-rows { display: flex; flex-direction: column; gap: 10px; }
+  .care-row {
+    display: flex; align-items: flex-start; gap: 14px;
+    padding: 12px 16px; border-radius: 12px;
+    background: var(--base); border: 1px solid var(--border);
+    transition: var(--transition);
+  }
+  .care-row:hover { border-color: var(--accent); background: var(--soft-accent2); }
+  .care-row-icon {
+    width: 32px; height: 32px; border-radius: 8px;
+    background: var(--soft-accent); color: var(--primary);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.8rem; flex-shrink: 0; margin-top: 1px;
+  }
+  .care-row-text { flex: 1; }
+  .care-row-label {
+    font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.12em; color: var(--text-light); margin-bottom: 3px;
+  }
+  .care-row-value { font-size: 0.92rem; color: var(--text-primary); line-height: 1.55; }
+
+  /* ── Card grid ── */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 0;
+  }
+  .cards-grid .result-card { margin-bottom: 0; }
+  .card-full { grid-column: 1 / -1; }
+
+  /* ── Responsive ── */
+  @media (max-width: 640px) {
+    .detail-hero { padding: 40px 0 36px; }
+    .detail-hero-inner { gap: 20px; }
+    .detail-hero-img, .detail-hero-img-placeholder { width: 110px; height: 110px; }
+    .detail-hero-text h1 { font-size: 1.45rem; }
+    .result-card { padding: 20px 18px; }
+    .detail-body { padding: 32px 0 60px; }
+    .cards-grid { grid-template-columns: 1fr; }
+    .card-full { grid-column: auto; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Hero -->
+{% with s=analysis.severity_score|default:5 %}
+<section class="detail-hero {% if s <= 2 %}sev-great{% elif s <= 4 %}sev-good{% elif s <= 6 %}sev-moderate{% elif s <= 8 %}sev-bad{% else %}sev-critical{% endif %}">
+  <div class="container">
+    <div class="detail-hero-inner">
+      {% if analysis.image %}
+        <img src="{{ analysis.image.url }}" alt="{{ analysis.plant_name }}" class="detail-hero-img">
+      {% else %}
+        <div class="detail-hero-img-placeholder"><i class="fas fa-leaf"></i></div>
+      {% endif %}
+
+      <div class="detail-hero-text">
+        <h1>{{ analysis.plant_name }}</h1>
+        {% if analysis.scientific_name %}
+          <p class="detail-hero-sci">{{ analysis.scientific_name }}</p>
+        {% endif %}
+        <div class="detail-hero-meta">
+          {% with status=analysis.health_status|lower %}
+          <span class="health-pill {{ status }}">
+            <span class="dot"></span>{{ analysis.health_status }}
+          </span>
+          {% endwith %}
+          <span class="detail-date">
+            <i class="fas fa-clock"></i>
+            {{ analysis.analyzed_at|date:"F j, Y · g:i A" }}
+          </span>
+        </div>
+        {% with s=analysis.severity_score %}
+        <div class="severity-wrap">
+          <span class="severity-label">Severity</span>
+          <div class="severity-bar">
+            <div class="severity-fill s{{ s }}" style="width: {{ s }}0%"></div>
+          </div>
+          <span class="severity-score-num">{{ s }}/10</span>
+        </div>
+        {% endwith %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endwith %}
+
+<!-- Body -->
+<section class="detail-body">
+  <div class="container">
+    <div class="analysis-detail-layout">
+
+      <div class="back-bar">
+        <a href="{% url 'analyze' %}" class="btn-back">
+          <i class="fas fa-arrow-left"></i> My History
+        </a>
+        <a href="{% url 'analyze' %}" class="btn-back">
+          <i class="fas fa-camera"></i> New Analysis
+        </a>
+      </div>
+
+      <div class="cards-grid">
+
+        {% if analysis.current_condition %}
+        <div class="result-card card-full">
+          <div class="rc-header">
+            <span class="rc-icon rc-icon--green"><i class="fas fa-eye"></i></span>
+            <h3>Current Condition</h3>
+          </div>
+          <p>{{ analysis.current_condition }}</p>
+        </div>
+        {% endif %}
+
+        {% if analysis.care_plan %}
+        <div class="result-card">
+          <div class="rc-header">
+            <span class="rc-icon rc-icon--green"><i class="fas fa-leaf"></i></span>
+            <h3>Care Plan</h3>
+          </div>
+          <div class="care-rows">
+            {% if analysis.care_plan.light %}
+            <div class="care-row">
+              <div class="care-row-icon"><i class="fas fa-sun"></i></div>
+              <div class="care-row-text">
+                <div class="care-row-label">Light</div>
+                <div class="care-row-value">{{ analysis.care_plan.light }}</div>
+              </div>
+            </div>
+            {% endif %}
+            {% if analysis.care_plan.water %}
+            <div class="care-row">
+              <div class="care-row-icon"><i class="fas fa-tint"></i></div>
+              <div class="care-row-text">
+                <div class="care-row-label">Water</div>
+                <div class="care-row-value">{{ analysis.care_plan.water }}</div>
+              </div>
+            </div>
+            {% endif %}
+            {% if analysis.care_plan.soil %}
+            <div class="care-row">
+              <div class="care-row-icon"><i class="fas fa-seedling"></i></div>
+              <div class="care-row-text">
+                <div class="care-row-label">Soil</div>
+                <div class="care-row-value">{{ analysis.care_plan.soil }}</div>
+              </div>
+            </div>
+            {% endif %}
+            {% if analysis.care_plan.temperature %}
+            <div class="care-row">
+              <div class="care-row-icon"><i class="fas fa-thermometer-half"></i></div>
+              <div class="care-row-text">
+                <div class="care-row-label">Temperature</div>
+                <div class="care-row-value">{{ analysis.care_plan.temperature }}</div>
+              </div>
+            </div>
+            {% endif %}
+            {% if analysis.care_plan.humidity %}
+            <div class="care-row">
+              <div class="care-row-icon"><i class="fas fa-cloud"></i></div>
+              <div class="care-row-text">
+                <div class="care-row-label">Humidity</div>
+                <div class="care-row-value">{{ analysis.care_plan.humidity }}</div>
+              </div>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+        {% endif %}
+
+        {% if analysis.common_problems %}
+        <div class="result-card">
+          <div class="rc-header">
+            <span class="rc-icon rc-icon--olive"><i class="fas fa-bug"></i></span>
+            <h3>Common Problems</h3>
+          </div>
+          <p>{{ analysis.common_problems }}</p>
+        </div>
+        {% endif %}
+
+        {% if analysis.cure_plan %}
+        <div class="result-card result-card--cure card-full">
+          <div class="rc-header">
+            <span class="rc-icon rc-icon--amber"><i class="fas fa-first-aid"></i></span>
+            <h3>Cure Plan</h3>
+          </div>
+          <p>{{ analysis.cure_plan }}</p>
+        </div>
+        {% endif %}
+
+      </div>
+
+    </div>
+  </div>
+</section>
+
+{% endblock %}

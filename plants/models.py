@@ -1,5 +1,6 @@
 from django.db import models
 from django.urls import reverse
+from django.contrib.auth.models import User
 
 
 class Plant(models.Model):
@@ -70,6 +71,36 @@ class Plant(models.Model):
 
     def get_absolute_url(self):
         return reverse('plant_detail', kwargs={'pk': self.pk})
+
+
+class PlantAnalysis(models.Model):
+    HEALTH_CHOICES = [
+        ('Healthy', 'Healthy'),
+        ('Stressed', 'Stressed'),
+        ('Diseased', 'Diseased'),
+        ('Unknown', 'Unknown'),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='plant_analyses')
+    plant_name = models.CharField(max_length=200)
+    scientific_name = models.CharField(max_length=200, blank=True)
+    health_status = models.CharField(max_length=20, choices=HEALTH_CHOICES, default='Unknown')
+    severity_score = models.PositiveSmallIntegerField(default=5, help_text="1 (thriving) – 10 (critical)")
+    current_condition = models.TextField(blank=True)
+    care_plan = models.JSONField(default=dict)
+    cure_plan = models.TextField(blank=True, null=True)
+    common_problems = models.TextField(blank=True)
+    image = models.ImageField(upload_to='analyses/', blank=True, null=True)
+    analyzed_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-analyzed_at']
+
+    def __str__(self):
+        return f"{self.plant_name} ({self.user.username}) — {self.analyzed_at:%Y-%m-%d}"
+
+    def get_absolute_url(self):
+        return reverse('analysis_detail', kwargs={'pk': self.pk})
 
 
 class BlogPost(models.Model):

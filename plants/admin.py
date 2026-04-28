@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import BlogPost, Plant
+from .models import BlogPost, Plant, PlantAnalysis
 
 
 @admin.register(Plant)
@@ -51,3 +51,11 @@ class BlogPostAdmin(admin.ModelAdmin):
             'classes': ('collapse',)
         }),
     )
+
+
+@admin.register(PlantAnalysis)
+class PlantAnalysisAdmin(admin.ModelAdmin):
+    list_display = ['plant_name', 'scientific_name', 'health_status', 'user', 'analyzed_at']
+    list_filter = ['health_status', 'analyzed_at']
+    search_fields = ['plant_name', 'scientific_name', 'user__username']
+    readonly_fields = ['analyzed_at']

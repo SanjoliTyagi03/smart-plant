@@ -7,6 +7,7 @@ PROMPT = """You are a plant expert. Analyze this plant image and return ONLY val
   "plant_name": "Common name",
   "scientific_name": "Scientific name",
   "health_status": "Healthy|Stressed|Diseased|Unknown",
+  "severity_score": <integer 1-10>,
   "current_condition": "Visible symptoms and observations",
   "care_plan": {
     "light": "Light requirements",
@@ -18,7 +19,8 @@ PROMPT = """You are a plant expert. Analyze this plant image and return ONLY val
   "cure_plan": "Cure steps if issues exist, or null if healthy",
   "common_problems": "Common problems for this species"
 }
-If no plant is visible, set plant_name to "Unknown" and describe what you see."""
+severity_score rules: 1-2 = thriving, 3-4 = minor issues, 5-6 = moderate stress, 7-8 = significant disease, 9-10 = critical/dying. A healthy plant should score 1-2. Always return an integer.
+If no plant is visible, set plant_name to "Unknown", health_status to "Unknown", and severity_score to 5."""
 
 
 def analyze_plant_image(image_bytes: bytes, mime_type: str) -> dict:
@@ -40,4 +42,3 @@ def analyze_plant_image(image_bytes: bytes, mime_type: str) -> dict:
         return {"error": "Could not parse plant analysis. Please try a clearer image."}
     except Exception as e:
         return {"error": f"Analysis failed: {str(e)}"}
-  
